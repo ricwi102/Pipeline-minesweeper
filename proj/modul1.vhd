@@ -1,6 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity ALU is
   port (
@@ -8,7 +9,7 @@ entity ALU is
     input1 : in std_logic_vector (31 downto 0);
     input2 : in std_logic_vector (31 downto 0);
     op_ctrl : in std_logic_vector (3 downto 0);
-    output : out std_logic_vector (32 downto 0);  --kanske inte; 32 för extra bit för flaggor
+    output : out std_logic_vector (31 downto 0)  --kanske inte; 32 för extra bit för flaggor
     );
 end ALU;
 
@@ -29,12 +30,12 @@ begin
         when "0010" => flag_output <= ('0' & input1) + ('0' & input2);
         when "0011" => flag_output <= ('0' & input1) - ('0' & input2);
         when "0100" => flag_output <= ('0' & input1) * ('0' & input2);
-        when "0101" => flag_output <= ('0' & input1) / ('0' & input2);
         when others => flag_output <= (others => '0');
       end case;
+    end if;
   end process;
 
-  output => flag_output(31 downto 0);
-  c_flag => flag_output(32);
+  output <= flag_output(31 downto 0);
+  c_flag <= flag_output(32);
 
 end Behavioral;
