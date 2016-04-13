@@ -9,10 +9,11 @@ entity IR is
   port ( clk            : in std_logic;                         --System clock
          prog_mem       : in std_logic_vector(31 downto 0);     --Program Memory Input
          rst            : in std_logic;                         --Reset
-	 IR1_out        : out std_logic_vector(31 downto 0));   --Output
-	 IR2_out        : out std_logic_vector(31 downto 0));   --Output
-	 IR3_out        : out std_logic_vector(31 downto 0));   --Output
-         IR4_out        : out std_logic_vector(31 downto 0));   --Output
+	 IR1_out        : out std_logic_vector(31 downto 0);   --Output
+	 IR2_out        : out std_logic_vector(31 downto 0);   --Output
+	 IR3_out        : out std_logic_vector(31 downto 0);   --Output
+         IR4_out        : out std_logic_vector(31 downto 0)
+         );   --Output
 	
 end IR;
 
@@ -38,10 +39,10 @@ process(clk)
   begin
     if rising_edge(clk) then
       if rst = '1' then
-	IR1_value <= 0;
-        IR2_value <= 0;
-        IR3_value <= 0;
-        IR4_value <= 0;     
+	IR1_value <= (others => '0');
+        IR2_value <= (others => '0');
+        IR3_value <= (others => '0');
+        IR4_value <= (others => '0');     
       else	
         IR4_value <= IR3_value;
         IR3_value <= IR2_value;
@@ -61,20 +62,20 @@ process(clk)
   begin
     if rising_edge(clk) then 
       if rst = '1' then
-	PC  <= 0;
-	PC1 <= 0;
-	PC2 <= 0;        
+	PC  <= (others => '0');
+	PC1 <= (others => '0');
+	PC2 <= (others => '0');        
       else	
-	if kolla om instruktionen inte är jmp then -- kolla om instruktionen är jump , dock inte bestämt vilken jmp är än
+	if false then -- �ndra false och kolla om instruktionen är jump , dock inte bestämt vilken jmp är än
 	  PC <= PC+4;
-	  mem_pos <= PC; -- uppdatera pos i programminnet
+	  -- mem_pos <= PC; -- uppdatera pos i programminnet
 	else
-	  ext(24 downto 0) <= IR1(24 downto 0);
+	  ext(24 downto 0) <= IR1_value(24 downto 0);
 	  ext(30 downto 25) <= (others => '0');
-	  ext(31) <= IR1(25) ; 
+	  ext(31) <= IR1_value(25) ; 
 	  PC2 <= ext + PC1; 
 	  PC <= ext + PC1; -- Sätt ext innan till valda bitar
-	  mem_pos <= PC;
+	  -- mem_pos <= PC;
 	end if;
         
       end if;
