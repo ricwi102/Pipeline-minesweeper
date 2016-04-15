@@ -1,0 +1,58 @@
+reg   -> Register
+#     -> Nummer
+DM(#) -> Data memory pos # 
+PC    -> Program countre
+
+reg(sista) är ett noll register som inte går att skriva till.
+förenklar instruktioner.
+
+Om du endast skriver konstant väljer assemblern att peka registret 
+på noll-registret.
+
+EX: LOAD r1, # -> r1 = (noll-reg + #)
+
+
+000000: NOP
+000001:	HALT
+000010: MOVE reg, #		-> move # to reg
+000100: LOAD reg1, reg2, #	-> load reg1 with DM(reg2 + #)
+000110: STORE #1, reg, #2	-> store (reg + #2) in DM(#1) 
+001000: STORE reg1, reg2, #	-> store (reg2 + #) in DM(reg1)
+001010: ADD reg1, reg2, # 	-> move (reg2 + #) to reg1   
+001011: ADD reg1, reg2, reg3	-> move (reg2 + reg3) to reg1
+001100: SUB reg1, reg2, #	-> move (reg2 - #) to reg1
+001101: SUB reg1, #, reg2 	-> move (# - reg2) to reg1
+001110: SUB reg1, reg2, reg3 	-> move (reg2 - reg3) to reg1
+001111: MULT reg1, reg2, #	-> move (reg2 * #) to reg1
+010000: MULT reg1, reg2, reg3	-> move (reg2 * reg3) to reg1
+000000: AND reg1, reg2, #	-> move (reg2 and #) ot reg1
+000000:	AND reg1, reg2, reg3	-> move (reg2 and reg3) ot reg1
+000000:	OR reg1, reg2,  #	-> move (reg2 or #) ot reg1
+000000: OR reg1, reg2		-> move (reg2 or reg3) ot reg1
+010010: LSR reg1, reg2, #	-> shift reg1 ( (reg2 + #) mod 32) times right
+010100: LSL reg1, reg2, #	-> shift reg1 (	(reg2 + #) mod 32) times left
+010110:	CMP reg1, reg2, #	-> compare reg1 and (reg2 + #) (reg1 - (reg2 + #))
+000000: BTST reg1, reg2, #	-> test bit (reg2 + #) in reg1
+011000: JMP reg, #		-> jump to (reg + #)  
+011010: JMPR reg, #		-> jump to (PC + reg + #)
+011100:	BEQ reg, #		-> if (z = 1) jump to (reg + #)
+011110: BEQR reg, #		-> if (z = 1) jump to (PC + # + reg)
+100000:	BNE reg, #		-> if (z = 0) jump to (reg + #)
+100010: BNER reg, #		-> if (z = 0) jump to (PC + # + reg)
+100011: 
+100100:
+100101:
+100110:
+100111:
+101000:
+101001:
+101010:
+
+ 
+
+100000: JMP #
+100001: JMP reg, # -> jump reg + #
+
+
+
+
