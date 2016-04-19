@@ -29,22 +29,21 @@ EX: LOAD r1, # -> r1 = (noll-reg + #)
 001110:	AND reg1, reg2, reg3	-> move (reg2 and reg3) ot reg1
 001111:	OR reg1, reg2,  #	-> move (reg2 or #) ot reg1
 010000: OR reg1, reg2		-> move (reg2 or reg3) ot reg1
-010001: LSR reg1, reg2, #	-> shift reg1 ( (reg2 + #) mod 32) times right
-010010: LSL reg1, reg2, #	-> shift reg1 (	(reg2 + #) mod 32) times left
-010011:	CMP reg1, reg2, #	-> compare reg1 and (reg2 + #) (reg1 - (reg2 + #))
-010100: BTST reg1, reg2, #	-> test bit (reg2 + #) in reg1
-010101: JMP reg, #		-> jump to (reg + #)  
-010110: JMPR reg, #		-> jump to (PC + reg + #)
-010111:	BEQ reg, #		-> if (z = 1) jump to (reg + #)
-011000: BEQR reg, #		-> if (z = 1) jump to (PC + # + reg)
-011001:	BNE reg, #		-> if (z = 0) jump to (reg + #)
-011010: BNER reg, #		-> if (z = 0) jump to (PC + # + reg)
-011011: 
-011100:
-011101:
-011110:
-011111:
-100000:
+010001: LSR reg1, reg2  	-> shift reg1 ( (reg2) mod 32) times right
+010010: LSR reg1, #		-> shift reg1 # times right
+010011: LSL reg1, reg2  	-> shift reg1 (	(reg2 + #) mod 32) times left
+010100: LSL reg1, #		-> shift reg1 # times left
+010101:	CMP reg1, reg2		-> compare reg1 and (reg2) (reg1-reg2)
+010110: CMP reg1, #		-> compare reg1 and #
+010111: BTST reg1, reg2  	-> test bit (reg2) in reg1
+011000: BTST reg1, #		-> test bit # in reg1
+011001: JMP  #		        -> jump to #  
+011010: JMPR #	         	-> jump to (PC + #)
+011011:	BEQ  #			-> if (z = 1) jump to #
+011100: BEQR #			-> if (z = 1) jump to (PC + # + reg)
+011101:	BNE  #		        -> if (z = 0) jump to (reg + #)
+011110: BNER #			-> if (z = 0) jump to (PC + # + reg)
+011111: 
 
 
 
