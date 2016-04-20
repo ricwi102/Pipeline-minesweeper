@@ -9,7 +9,7 @@ entity ALU is
     input1 : in std_logic_vector (31 downto 0);
     input2 : in std_logic_vector (31 downto 0);
     op_ctrl : in std_logic_vector (5 downto 0);
-    output : out std_logic_vector (31 downto 0)  --kanske inte; 32 för extra bit för flaggor
+    output : out std_logic_vector (31 downto 0)  
     );
 end ALU;
 
@@ -18,6 +18,8 @@ architecture Behavioral of ALU is
 signal o_flag : std_logic;
 signal c_flag : std_logic;
 signal f_flag : std_logic;
+signal z_flag : std_logic;
+signal n_flag : std_logic;
 signal flag_output: std_logic_vector (32 downto 0);
 
 begin 
@@ -57,5 +59,7 @@ begin
 
   output <= flag_output(31 downto 0);
   c_flag <= flag_output(32);
+  z_flag <= '1' when (conv_integer(flag_output(31 downto 0)) = 0) else '0';
+  n_flag <= '1' when (conv_integer(flag_output(31 downto 0)) < 0) else '0';
 
 end Behavioral;
