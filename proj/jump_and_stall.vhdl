@@ -1,4 +1,7 @@
--- LIBRARIES
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity jump_stall is
   port ( clk            : in std_logic;
@@ -15,8 +18,8 @@ end jump_stall;
 
 architecture Behavioral of jump_stall is
 
-  signal register_used : std_logic := 0;
-  signal stall_rom     : std_logic := 0;
+  signal register_used : std_logic := '0';
+  signal stall_rom     : std_logic := '0';
   signal jump_rom      : std_logic_vector(1 downto 0) := "00";   
   signal Stall_JmpTaken : std_logic_vector(1 downto 0) := "00";  -- Stall = X0 , JmpTaken = 0X
                                                                 
@@ -28,7 +31,7 @@ begin  -- Behoavioral
     if rising_edge(clk) then
       if (IR2_in(25 downto 21) = IR1_in(15 downto 11)) or
         (IR2_in(25 downto 21) = IR1_in(20 downto 16)) then
-        register_used <= 1;
+        register_used <= '1';
       end if;
 
        with IR1_in(31 downto 26) select
@@ -45,13 +48,13 @@ begin  -- Behoavioral
     end if;
   end process;
 
--- Stall 
+-- Stall/JmpTaken
   
-stall_enabled <= '1' when (register_used and stall_rom and jump_rom(1)) else '0';
+Stall_JmpTaken(1) <= '1' when (register_used and stall_rom and jump_rom(1)) else '0'; -- Stall
+Stall_JmpTaken(0) <= '1' when ( or jump_rom(0)) else '0'; -- JmpTaken (Fixa klart efter att flaggorna blir klara)
+                                                         
 
 -- Muxarna
-
-architecture behavioral of mux is
   
       with Stall_JmpTaken select
         PC_out <= (PC + 4) when "00",
@@ -66,8 +69,6 @@ architecture behavioral of mux is
       with Stall_JmpTaken select
         IR2_out <= IR1 when "00",
                    "000000" when others;
-      
-end architecture behavioral;
 
 --
 
