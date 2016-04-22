@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity jump_stall is
-  port ( clk            : in std_logic;
+  port (
          IR1_in         : in std_logic_vector(31 downto 0);
          IR2_in         : in std_logic_vector(31 downto 0);
          IR1_out        : out std_logic_vector(31 downto 0);
@@ -12,64 +12,68 @@ entity jump_stall is
          PC_out         : out std_logic_vector(31 downto 0);
          PC_in          : in std_logic_vector(31 downto 0);
          PC2_in         : in std_logic_vector(31 downto 0);
-         PM_in             : in std_logic_vector(31 downto 0)
+         PM_in          : in std_logic_vector(31 downto 0);
+         z_flag         : in std_logic
          );
 end jump_stall;
 
 architecture Behavioral of jump_stall is
 
-  signal register_used : std_logic := '0';
-  signal stall_rom     : std_logic := '0';
-  signal jump_rom      : std_logic_vector(1 downto 0) := "00";   
-  signal Stall_JmpTaken : std_logic_vector(1 downto 0) := "00";  -- Stall = X0 , JmpTaken = 0X
-                                                                
+  signal stall_rom     : std_logic_vector(30 downto 0) := b"0001_0111_1111_1111_1111_1111_1000_000";
+  signal IR1_internal           : std_logic_vector(31 downto 0);
+  signal IR2_internal           : std_logic_vector(31 downto 0); 
+  alias command : std_logic_vector(5 downto 0) is IR2_internal(31 downto 26);
+
+  signal  mux_signal : std_logic_vector(1 downto 0) := "00";
+  
+  signal mem_acc, reg_acc : std_logic := '0';    -- command at IR2 = load word
+  alias send_stall : std_logic is mux_signal(1);
+  
+  signal j, z_flag_j : std_logic := '0';
+  alias take_jump : std_logic is mux_signal(0);
+
+ 
   
 begin  -- Behoavioral
 
-  process(clk)
-  begin
-    if rising_edge(clk) then
-      if (IR2_in(25 downto 21) = IR1_in(15 downto 11)) or
-        (IR2_in(25 downto 21) = IR1_in(20 downto 16)) then
-        register_used <= '1';
-      end if;
+  IR1_internal <= IR1_in;
+  IR2_internal <= IR2_in;
 
-       with IR1_in(31 downto 26) select
-         stall_rom <= '0' when "000000",
-                      '0' when "000001",
-                      '1' when others;  
-                    
-       with IR2_in(31 downto 26) select
-         jump_rom <=  "10" when "000011",
-                      "00" when others;
-         
-        
-      end if;
-    end if;
-  end process;
+  -- STALL LOGIC --
 
--- Stall/JmpTaken
+  mem_acc <= '1' when (command = "000011") else '0';
+
+  reg_acc <= '1' when ((IR2_internal(25 downto 21) = IR1_internal(20 downto 16) or
+                       (IR2_internal(25 downto 21) = IR1_internal(15 downto 11)))) else '0';
+
+  send_stall <= '1' when (mem_acc = '1' and reg_acc = '1' and
+                          stall_rom(conv_integer(IR1_internal(31 downto 26))) = '1') else '0';  
   
-Stall_JmpTaken(1) <= '1' when (register_used and stall_rom and jump_rom(1)) else '0'; -- Stall
-Stall_JmpTaken(0) <= '1' when ( or jump_rom(0)) else '0'; -- JmpTaken (Fixa klart efter att flaggorna blir klara)
-                                                         
-
--- Muxarna
   
-      with Stall_JmpTaken select
-        PC_out <= (PC + 4) when "00",
-                  PC2_in when "01",
-                  PC when others;
+  -- JUMP LOGIC --
 
-      with Stall_JmpTaken select
-        IR1_out <= PM_in when "00",
-                   "000000" when "01",  -- NOP
-                   IR1 when others;
+  j <= '1' when (command = "011001" or command = "011010") else '0';
+  
+  z_flag_j <= '1' when (z_flag = '1' and (conv_integer(command) >= 27 and conv_integer(command) <= 31))
+              else '0';
+  
+  take_jump <= '1' when (j = '1' or z_flag_j = '1') else '0';
 
-      with Stall_JmpTaken select
-        IR2_out <= IR1 when "00",
-                   "000000" when others;
 
---
+
+  -- MUX --
+
+  PC_out <= PC_in + 4 when (mux_signal = "00") else
+            PC2_in    when (mux_signal = "01") else
+            PC_in;
+
+  IR1_out <= PM_in              when (mux_signal = "00") else
+             (others => '0')    when (mux_signal = "01") else
+             IR1_internal;
+
+
+  IR2_out <= IR1_internal when (send_stall = '0') else (others => '0');
+
+
 
 end Behavioral;
