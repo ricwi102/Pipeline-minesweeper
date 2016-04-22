@@ -9,6 +9,8 @@ entity IR is
   port ( clk            : in std_logic;                         --System clock
          prog_mem       : in std_logic_vector(31 downto 0);     --Program Memory Input
          rst            : in std_logic;                         --Reset
+	 IR1_in         : out std_logic_vector(31 downto 0);   --Output
+	 IR2_in         : out std_logic_vector(31 downto 0);   --Output
 	 IR1_out        : out std_logic_vector(31 downto 0);   --Output
 	 IR2_out        : out std_logic_vector(31 downto 0);   --Output
 	 IR3_out        : out std_logic_vector(31 downto 0);   --Output

@@ -31,10 +31,7 @@ architecture Behavioral of dataforward is
   
 begin  
 
-  process(clk)
-  begin
-    if rising_edge(clk) then
-
+  
       if(IR3_in(25 downto 21) = IR2_in(20 downto 16)) then
         IR3_IR2_first <= '1';
       end if;
@@ -50,9 +47,7 @@ begin
       if(IR4_in(25 downto 21) = IR2_in(15 downto 11)) then
         IR4_IR2_second <= '1';
       end if;
-        
-    end if;
-  end process;
+  
 
 
   -- AND -> MUX
