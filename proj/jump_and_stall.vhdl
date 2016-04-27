@@ -4,24 +4,27 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity jump_stall is
-  port (
+  port ( clk,rst        : in std_logic;
          IR1_in         : in std_logic_vector(31 downto 0);
          IR2_in         : in std_logic_vector(31 downto 0);
          IR1_out        : out std_logic_vector(31 downto 0);
          IR2_out        : out std_logic_vector(31 downto 0);
          PC_out         : out std_logic_vector(31 downto 0);
-         PC_in          : in std_logic_vector(31 downto 0);
-         PC2_in         : in std_logic_vector(31 downto 0);
          PM_in          : in std_logic_vector(31 downto 0);
          z_flag         : in std_logic
          );
 end jump_stall;
 
 architecture Behavioral of jump_stall is
-
+  
+  signal extend	        : std_logic_vector(31 downto 0);
+  signal PC		: std_logic_vector(31 downto 0);
+  signal PC1		: std_logic_vector(31 downto 0);
+  signal PC2		: std_logic_vector(31 downto 0);
+  
   signal stall_rom     : std_logic_vector(30 downto 0) := b"0001_0111_1111_1111_1111_1111_1000_000";
   signal IR1_internal           : std_logic_vector(31 downto 0);
-  signal IR2_internal           : std_logic_vector(31 downto 0); 
+  signal IR2_internal           : std_logic_vector(31 downto 0);
   alias command : std_logic_vector(5 downto 0) is IR2_internal(31 downto 26);
 
   signal  mux_signal : std_logic_vector(1 downto 0) := "00";
@@ -61,12 +64,34 @@ begin  -- Behoavioral
 
 
 
-  -- MUX --
+  
+  process(clk)
+    begin
+      if(rising_edge(clk)) then
+        if(rst = '1') then
+          PC <= (others => '0');
+          PC1 <= (others => '0');
+          PC2 <= (others => '0');
+        else    
+          PC2 <= extend + PC1;
+          PC1 <= PC;
+          if(mux_signal = "00") then
+            PC <= PC + 4;
+          elsif(mux_signal = "01") then
+            PC <= PC2;
+          else
+            PC <= PC;
+          end if;
+        end if;
+      end if;
+    end process;
+          
 
-  PC_out <= PC_in + 4 when (mux_signal = "00") else
-            PC2_in    when (mux_signal = "01") else
-            PC_in;
+  extend(24 downto 0) <= IR1_internal(24 downto 0);
+  extend(30 downto 25) <= (others => '0');
+  extend(31) <= IR1_internal(25);
 
+  -- MUX --  
   IR1_out <= PM_in              when (mux_signal = "00") else
              (others => '0')    when (mux_signal = "01") else
              IR1_internal;

@@ -31,23 +31,15 @@ architecture Behavioral of dataforward is
   
 begin  
 
-  
-      if(IR3_in(25 downto 21) = IR2_in(20 downto 16)) then
-        IR3_IR2_first <= '1';
-      end if;
 
-      if(IR2_in(20 downto 16) = IR4_in(25 downto 21)) then
-        IR4_IR2_first <= '1';
-      end if;
-
-      if(IR3_in(25 downto 21) = IR2_in(15 downto 11)) then
-        IR3_IR2_second <= '1';
-      end if;
-
-      if(IR4_in(25 downto 21) = IR2_in(15 downto 11)) then
-        IR4_IR2_second <= '1';
-      end if;
-  
+  IR3_IR2_first <= '1' when (IR3_in(25 downto 21) = IR2_in(20 downto 16)) else '0';
+  IR4_IR2_first <= '1' when (IR2_in(20 downto 16) = IR4_in(25 downto 21)) else '0';
+  IR3_IR2_second <= '1' when (IR3_in(25 downto 21) = IR2_in(15 downto 11)) else '0';
+  IR4_IR2_second <= '1' when (IR4_in(25 downto 21) = IR2_in(15 downto 11)) else '0';
+  -----------------------------------------------------------------------------
+  -- -------------------------------
+  -----------------------------------------------------------------------------
+   
 
 
   -- AND -> MUX
