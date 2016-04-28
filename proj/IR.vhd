@@ -6,16 +6,15 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 -- entity
 entity IR is
-  port ( clk            : in std_logic;                        --System clock
-         prog_mem       : in std_logic_vector(31 downto 0);    --Program Memory Input
-         rst            : in std_logic;                        --Reset
-         PC_in          : in std_logic_vector(31 downto 0);    --PC from jump_stall
-	 IR1_in         : out std_logic_vector(31 downto 0);   --Output
-	 IR2_in         : out std_logic_vector(31 downto 0);   --Output
+  port ( clk, rst       : in std_logic;                         --System clock
+       
 	 IR1_out        : out std_logic_vector(31 downto 0);   --Output
 	 IR2_out        : out std_logic_vector(31 downto 0);   --Output
 	 IR3_out        : out std_logic_vector(31 downto 0);   --Output
-         IR4_out        : out std_logic_vector(31 downto 0)
+         IR4_out        : out std_logic_vector(31 downto 0);
+
+	 IR1_in		: in std_logic_vector(31 downto 0); 
+	 IR2_in 	: in std_logic_vector(31 downto 0)
          );   --Output
 	
 end IR;
@@ -28,7 +27,6 @@ architecture Behavioral of IR is
   signal IR2_value      :std_logic_vector(31 downto 0);
   signal IR3_value      :std_logic_vector(31 downto 0);
   signal IR4_value      :std_logic_vector(31 downto 0);
-
 
 
 begin
@@ -45,8 +43,8 @@ process(clk)
       else	
         IR4_value <= IR3_value;
         IR3_value <= IR2_value;
-        IR2_value <= IR1_value;
-        IR1_value <= prog_mem;
+        IR2_value <= IR2_in;
+        IR1_value <= IR1_in;
         
       end if;
     end if;
@@ -58,6 +56,4 @@ process(clk)
   IR4_out <= IR4_value;
   
 
- 
-  
 end Behavioral;

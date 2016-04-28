@@ -36,8 +36,8 @@ begin
         when "001000" => flag_output <= ('0' & input1) - ('0' & input2);
         when "001001" => flag_output <= ('0' & input1) - ('0' & input2);
         when "001010" => flag_output <= ('0' & input1) - ('0' & input2);
-        when "001011" => flag_output <= ('0' & input1) * ('0' & input2);
-        when "001100" => flag_output <= ('0' & input1) * ('0' & input2);
+        when "001011" => flag_output <= ('0' & (input1(15 downto 0)) * (input2(15 downto 0)));
+        when "001100" => flag_output <= ('0' & (input1(15 downto 0)) * (input2(15 downto 0)));
         when "001101" => flag_output <= ('0' & input1) and ('0' & input2);
         when "001110" => flag_output <= ('0' & input1) and ('0' & input2);
         when "001111" => flag_output <= ('0' & input1) or ('0' & input2);
