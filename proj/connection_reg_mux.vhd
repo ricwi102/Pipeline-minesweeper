@@ -1,0 +1,122 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+
+entity connection_reg_mux is
+   port( clk, rst	: in std_logic;
+	 IR1_in		: in std_logic_vector(31 downto 0);
+	 IR2_in		: in std_logic_vector(31 downto 0);
+	 IR3_in		: in std_logic_vector(31 downto 0);
+	 IR4_in		: in std_logic_vector(31 downto 0);
+	 B2_mux		: in std_logic_vector(31 downto 0);
+	 input2_alu_DF	: in std_logic_vector(31 downto 0);
+	 A2, B2		: out std_logic_vector(31 downto 0);
+	 D4_Z4_data	: out std_logic_vector(31 downto 0)
+
+	);
+end connection_reg_mux
+
+
+
+architecture Behavioral of connection_reg_mux is
+
+component Regs is
+  port (
+    clk, rst 			 : in std_logic;
+    r1_enable, r2_enable 	 : in std_logic;
+    w_enable 			 : in std_logic; 
+    out1, out2 			 : out std_logic_vector (31 downto 0);
+    write_in 			 : in std_logic_vector (31 downto 0);      
+    read_address1, read_address2 : in std_logic_vector (4 downto 0);
+    write_address 		 : in std_logic_vector (4 downto 0)
+    );
+end component;
+
+
+component ALU_mux is
+  port (
+    clk,rst    : in std_logic;
+    reg        : in std_logic_vector(31 downto 0);
+    IR1        : in std_logic_vector(31 downto 0);
+    IR2        : in std_logic_vector(31 downto 0);
+    output     : out std_logic_vector(31 downto 0)
+    );
+end component;
+
+
+component register_mux is
+  port (D4      : in std_logic_vector (31 downto 0);
+        Z4      : in std_logic_vector (31 downto 0);
+        IR4     : in std_logic_vector (31 downto 0);
+        we      : out std_logic;
+        data    : out std_logic_vector (31 downto 0);
+        adr     : out std_logic_vector (5 downto 0)
+        );
+end component;
+
+component ALU is
+  port (clk 	: in std_logic;
+    	input1 	: in std_logic_vector (31 downto 0);
+    	input2 	: in std_logic_vector (31 downto 0);
+    	op_ctrl : in std_logic_vector (5 downto 0);
+    	output 	: out std_logic_vector (31 downto 0)  --D3 I guess bro?
+	);
+end component;
+
+component data_minne is
+  port (clk 	: in std_logic;
+       	adr 	: in std_logic_vector(8 downto 0); 	     --D3 I guess bro?
+	IR3_in	: in std_logic_vector(31 downto 0);
+        data_in : in std_logic_vector(31 downto 0);     
+        data_out : out std_logic_vector(31 downto 0)
+	);
+
+signal write_data 	: std_logic_vector (31 downto 0);
+signal we_internal	: std_logic;
+signal ALU_mux_out	: std_logic_vector (31 downto 0);
+signal D3_int,D4_int	: std_logic_vector (31 downto 0);
+signal Z4_int		: std_logic_vector (31 downto 0);
+signal adr_internal 	: std_logic_vector (4 downto 0);
+signal DM_adr 		: std_logic_vector (8 downto 0);
+
+alias read_adr_int1	: std_logic_vector (4 downto 0) is IR1_in(20 downto 16);
+alias read_adr_int2	: std_logic_vector (4 downto 0) is IR1_in(15 downto 11);
+alias command		: std_logic_vector (5 downto 0) is IR1_in(31 downto 26);
+
+begin
+
+DM_adr <= D3_int(8 downto 0);
+
+D4_Z4_data <= write_data;
+
+process(clk)
+  begin 
+    if(rising_edge(clk)) then
+	D4_int <= D3_int;
+    end if; 
+end process;
+
+U0 : Regs port map(clk => clk, rst => rst,
+		   r1_enable => , r2_enable => , w_enable => we_internal, 
+		   out1 => A2 , out2 => B2 , write_in => write_data ,
+		   read_address1 => read_adr_int1, read_address2 => read_adr_int2, write_address => adr_internal ); 	
+
+
+U1 : ALU_mux port map(clk => clk, rst => rst,
+		      reg => B2_mux, IR1 => IR1_in , IR2 => IR2_in, output => ALU_mux_out);	
+
+
+
+U2 : register_mux port map(D4 => D4_int, Z4 => Z4_int, IR4 => IR4_in,
+			   we => we_internal, data => write_data , adr => adr_internal);
+
+U3 : ALU port map(clk => clk, input1 => ALU_mux_out, input2 => input2_alu_DF, op_ctrl => command, output => D3_int); 
+
+U4 : data_minne port map(clk => clk, adr => DM_adr , data_in => B2_mux, data_out => Z4_int, IR3_in => IR3_in);
+
+
+end Behavioral;
+	
+
