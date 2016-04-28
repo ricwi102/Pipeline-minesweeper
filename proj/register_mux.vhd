@@ -9,7 +9,7 @@ entity register_mux is
         IR4     : in std_logic_vector (31 downto 0);
         we      : out std_logic;
         data    : out std_logic_vector (31 downto 0);
-        adr     : out std_logic_vector (5 downto 0)
+        adr     : out std_logic_vector (4 downto 0)
         );
    
   
@@ -26,7 +26,7 @@ begin
   Z4_help <= Z4;
   IR4_help <= IR4;
 
-  adr <= IR4_help(25 downto 20);
+  adr <= IR4_help(25 downto 21);
   data <= Z4 when (command = "000011") else
           D4;
   we <= '0' when ((conv_integer(command) > 20)

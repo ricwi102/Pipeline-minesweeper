@@ -5,13 +5,13 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity Regs is
   port (
-    out1, out2 : out std_logic_vector (31 downto 0);
-    write_in : in std_logic_vector (31 downto 0);
-    r1_enable, r2_enable : in std_logic;
-    w_enable : in std_logic;
-    clk : in std_logic;
+    clk, rst 			 : in std_logic;
+    r1_enable, r2_enable 	 : in std_logic;
+    w_enable 			 : in std_logic; 
+    out1, out2 			 : out std_logic_vector (31 downto 0);
+    write_in 			 : in std_logic_vector (31 downto 0);      
     read_address1, read_address2 : in std_logic_vector (4 downto 0);
-    write_address : in std_logic_vector (4 downto 0)
+    write_address 		 : in std_logic_vector (4 downto 0)
     );
 end Regs;
 

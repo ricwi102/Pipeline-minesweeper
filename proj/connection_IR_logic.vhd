@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 
-entity IR_and_forwarding_and_stall is
+entity connection_IR_logic is
   port (
     clk         : in std_logic;
     rst         : in std_logic;
@@ -26,9 +26,9 @@ entity IR_and_forwarding_and_stall is
     z_flag	: in std_logic
     );
   
-end IR_and_forwarding_and_stall;
+end connection_IR_logic;
 
-architecture Behavioral of IR_and_forwarding_and_stall is
+architecture Behavioral of connection_IR_logic is
 
   --Ports from dataforwarding.
   component dataforwarding
