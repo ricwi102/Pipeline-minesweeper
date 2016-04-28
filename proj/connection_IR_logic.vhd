@@ -16,8 +16,7 @@ entity connection_IR_logic is
 
     ALU_A_out   : out std_logic_vector(31 downto 0);  
     ALU_B_out   : out std_logic_vector(31 downto 0);
-
-    PM_in 	: in std_logic_vector(31 downto 0);
+  
     A2_in 	: in std_logic_vector(31 downto 0);
     B2_in 	: in std_logic_vector(31 downto 0);
     D3_in 	: in std_logic_vector(31 downto 0);
@@ -76,6 +75,14 @@ architecture Behavioral of connection_IR_logic is
         );
   end component;
 
+
+  component PM
+  port( clk, rst	: in std_logic;
+	address		: in std_logic_vector(31 downto 0);
+	instruction	: out std_logic_vector(31 downto 0)
+	)
+  end component;
+
   -- Interna
   signal IR1_value : std_logic_vector(31 downto 0); 	-- IR till JS
   signal IR2_value : std_logic_vector(31 downto 0); 	-- IR till JS och DF
@@ -84,6 +91,9 @@ architecture Behavioral of connection_IR_logic is
 
   signal IR1_plus  : std_logic_vector(31 downto 0); 	-- JS till IR 
   signal IR2_plus  : std_logic_vector(31 downto 0);	-- JS till IR  
+
+  signal PM_internal : std_logic_vector(31 downto 0);	
+  signal PC_internal : std_logic_vector(31 downto 0);
   
 begin  -- Behavioral
 
@@ -99,14 +109,17 @@ begin  -- Behavioral
 		  IR1_in => IR1_plus, IR2_in => IR2_plus);							-- IR_plus kopplas till IR			
 
 --Dataforwardingportar.
- U1 : dataforwarding port map(ALU_A_out => ALU_A_out, ALU_B_out => ALU_B_out, 					-- IR 						
-			      A2_in => A2_in, B2_in => B2_in, D3_in => D3_in, D4_Z4_in => D4_Z4_in,						
-			      IR2_in_df => IR2_value, IR3_in_df => IR3_value, IR4_in_df => IR4_value );											
+ U1 : dataforwarding port map(ALU_A_out => ALU_A_out, ALU_B_out => ALU_B_out,		-- IR 						
+			      A2_in => A2_in, B2_in => B2_in, D3_in => D3_in, D4_Z4_in => D4_Z4_in,
+			      IR2_in_df => IR2_value, IR3_in_df => IR3_value, IR4_in_df => IR4_value );
 
 --Jump_stall-portar.
  U2 : jump_stall port map(clk => clk, rst => rst,
-			  PM_in => PM_in, IR1_in_js => IR1_value, IR2_in_js => IR2_value, 
+			  PM_in => PM_internal, IR1_in_js => IR1_value, IR2_in_js => IR2_value, 
 			  IR1_out_js => IR1_plus, IR2_out_js => IR2_plus,
-			  z_flag_in => z_flag); 			
+			  PC_out => PC_internal,
+			  z_flag_in => z_flag); 
+
+ U3 : PM port map(clk => clk, rst => rst, address => PC_internal, instruction => PM_internal)
 
 end Behavioral;
