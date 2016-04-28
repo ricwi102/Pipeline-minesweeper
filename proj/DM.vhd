@@ -22,7 +22,7 @@ type ram_t is array (0 to 511) of
 signal ram : ram_t := (others => (others => '0'));
 
 signal Z3, Z4 : std_logic_vector(31 downto 0) := (others => '0');  -- Register
-signal we     : std_logic;
+signal we     : std_logic := '0';
 
 begin
 

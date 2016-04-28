@@ -11,12 +11,12 @@ entity connection_reg_mux is
 	 IR3_in		: in std_logic_vector(31 downto 0);
 	 IR4_in		: in std_logic_vector(31 downto 0);
 	 B2_mux		: in std_logic_vector(31 downto 0);
-	 input2_alu_DF	: in std_logic_vector(31 downto 0);
+	 A2_mux		: in std_logic_vector(31 downto 0);
 	 A2, B2		: out std_logic_vector(31 downto 0);
 	 D4_Z4_data	: out std_logic_vector(31 downto 0)
 
 	);
-end connection_reg_mux
+end connection_reg_mux;
 
 
 
@@ -25,7 +25,6 @@ architecture Behavioral of connection_reg_mux is
 component Regs is
   port (
     clk, rst 			 : in std_logic;
-    r1_enable, r2_enable 	 : in std_logic;
     w_enable 			 : in std_logic; 
     out1, out2 			 : out std_logic_vector (31 downto 0);
     write_in 			 : in std_logic_vector (31 downto 0);      
@@ -72,6 +71,7 @@ component data_minne is
         data_in : in std_logic_vector(31 downto 0);     
         data_out : out std_logic_vector(31 downto 0)
 	);
+end component;
 
 signal write_data 	: std_logic_vector (31 downto 0);
 signal we_internal	: std_logic;
@@ -98,8 +98,7 @@ process(clk)
     end if; 
 end process;
 
-U0 : Regs port map(clk => clk, rst => rst,
-		   r1_enable => , r2_enable => , w_enable => we_internal, 
+U0 : Regs port map(clk => clk, rst => rst, w_enable => we_internal, 
 		   out1 => A2 , out2 => B2 , write_in => write_data ,
 		   read_address1 => read_adr_int1, read_address2 => read_adr_int2, write_address => adr_internal ); 	
 
@@ -112,7 +111,7 @@ U1 : ALU_mux port map(clk => clk, rst => rst,
 U2 : register_mux port map(D4 => D4_int, Z4 => Z4_int, IR4 => IR4_in,
 			   we => we_internal, data => write_data , adr => adr_internal);
 
-U3 : ALU port map(clk => clk, input1 => ALU_mux_out, input2 => input2_alu_DF, op_ctrl => command, output => D3_int); 
+U3 : ALU port map(clk => clk, input1 => ALU_mux_out, input2 => A2_mux, op_ctrl => command, output => D3_int); 
 
 U4 : data_minne port map(clk => clk, adr => DM_adr , data_in => B2_mux, data_out => Z4_int, IR3_in => IR3_in);
 

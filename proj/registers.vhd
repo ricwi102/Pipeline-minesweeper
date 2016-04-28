@@ -6,7 +6,6 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity Regs is
   port (
     clk, rst 			 : in std_logic;
-    r1_enable, r2_enable 	 : in std_logic;
     w_enable 			 : in std_logic; 
     out1, out2 			 : out std_logic_vector (31 downto 0);
     write_in 			 : in std_logic_vector (31 downto 0);      
@@ -26,20 +25,9 @@ architecture Behavioral of Regs is
   
 begin  -- Behavioral
  process (clk) begin
-  if rising_edge(clk) then               
-    if (r1_enable = '1') then     
-      a2 <= temp_a;
-    else
-      a2 <= (others => '0');
-    end if;
-
-
-    if (r2_enable = '1') then     
+  if rising_edge(clk) then                    
+     a2 <= temp_a;    
      b2 <= temp_b;
-    else
-      b2 <= (others => '0');
-    end if;
-
     
     if(w_enable = '1') then
       case write_address is
