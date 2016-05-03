@@ -80,20 +80,20 @@ architecture Behavioral of connection_IR_logic is
   port( clk, rst	: in std_logic;
 	address		: in std_logic_vector(31 downto 0);
 	instruction	: out std_logic_vector(31 downto 0)
-	)
+	);
   end component;
 
   -- Interna
-  signal IR1_value : std_logic_vector(31 downto 0); 	-- IR till JS
-  signal IR2_value : std_logic_vector(31 downto 0); 	-- IR till JS och DF
-  signal IR3_value : std_logic_vector(31 downto 0);	-- IR till DF	
-  signal IR4_value : std_logic_vector(31 downto 0); 	-- IR till DF
+  signal IR1_value : std_logic_vector(31 downto 0) := (others => '0'); 	-- IR till JS
+  signal IR2_value : std_logic_vector(31 downto 0) := (others => '0'); 	-- IR till JS och DF
+  signal IR3_value : std_logic_vector(31 downto 0) := (others => '0');	-- IR till DF	
+  signal IR4_value : std_logic_vector(31 downto 0) := (others => '0'); 	-- IR till DF
 
-  signal IR1_plus  : std_logic_vector(31 downto 0); 	-- JS till IR 
-  signal IR2_plus  : std_logic_vector(31 downto 0);	-- JS till IR  
+  signal IR1_plus  : std_logic_vector(31 downto 0) := (others => '0'); 	-- JS till IR 
+  signal IR2_plus  : std_logic_vector(31 downto 0) := (others => '0');	-- JS till IR  
 
-  signal PM_internal : std_logic_vector(31 downto 0);	
-  signal PC_internal : std_logic_vector(31 downto 0);
+  signal PM_internal : std_logic_vector(31 downto 0) := (others => '0');	
+  signal PC_internal : std_logic_vector(31 downto 0) := (others => '0');
   
 begin  -- Behavioral
 
@@ -120,6 +120,6 @@ begin  -- Behavioral
 			  PC_out => PC_internal,
 			  z_flag_in => z_flag); 
 
- U3 : PM port map(clk => clk, rst => rst, address => PC_internal, instruction => PM_internal)
+ U3 : PM port map(clk => clk, rst => rst, address => PC_internal, instruction => PM_internal);
 
 end Behavioral;

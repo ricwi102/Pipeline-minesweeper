@@ -18,9 +18,9 @@ end Regs;
 
 architecture Behavioral of Regs is
 
-  signal r0, r1, r2, r3 : std_logic_vector(31 downto 0);  -- Register
-  signal r4, r5, r6, r7 : std_logic_vector(31 downto 0);
-  signal a2, b2, temp_a, temp_b : std_logic_vector(31 downto 0);
+  signal r0, r1, r2, r3 : std_logic_vector(31 downto 0) := (others => '0');  -- Register
+  signal r4, r5, r6, r7 : std_logic_vector(31 downto 0) := (others => '0');
+  signal a2, b2, temp_a, temp_b : std_logic_vector(31 downto 0) := (others => '0');
 
   
 begin  -- Behavioral
