@@ -1,0 +1,48 @@
+# //  ModelSim SE 6.5c Aug 27 2009 Linux 2.6.32-573.22.1.el6.x86_64
+# //
+# //  Copyright 1991-2009 Mentor Graphics Corporation
+# //              All Rights Reserved.
+# //
+# //  THIS WORK CONTAINS TRADE SECRET AND 
+# //  PROPRIETARY INFORMATION WHICH IS THE PROPERTY
+# //  OF MENTOR GRAPHICS CORPORATION OR ITS LICENSORS
+# //  AND IS SUBJECT TO LICENSE TERMS.
+# //
+vsim -voptargs=+acc work.keyboard_handler work.keyboard_handler_tb
+# vsim -voptargs=+acc work.keyboard_handler work.keyboard_handler_tb 
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# Loading std.standard
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.keyboard_handler(behavioral)#1
+# Loading work.keyboard_handler_tb(behavioral)#1
+add wave \
+{sim:/keyboard_handler/clk } 
+add wave \
+{sim:/keyboard_handler_tb/clk } \
+{sim:/keyboard_handler_tb/rst } \
+{sim:/keyboard_handler_tb/ps2keyboardclk } \
+{sim:/keyboard_handler_tb/ps2keyboarddata } \
+{sim:/keyboard_handler_tb/keypressedout } \
+{sim:/keyboard_handler_tb/running } \
+{sim:/keyboard_handler_tb/keyboard_input } 
+add wave \
+{sim:/keyboard_handler/clk } 
+run
+# ** Warning: NUMERIC_STD."=": metavalue detected, returning FALSE
+#    Time: 0 ns  Iteration: 0  Instance: /keyboard_handler_tb/uut
+# ** Warning: NUMERIC_STD."=": metavalue detected, returning FALSE
+#    Time: 0 ns  Iteration: 0  Instance: /keyboard_handler
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
