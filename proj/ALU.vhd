@@ -5,22 +5,23 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity ALU is
   port (
-    clk : in std_logic;
-    input1 : in std_logic_vector (31 downto 0);
-    input2 : in std_logic_vector (31 downto 0);
-    op_ctrl : in std_logic_vector (5 downto 0);
-    output : out std_logic_vector (31 downto 0)  
+    clk 		: in std_logic;
+    input1 		: in std_logic_vector (31 downto 0);
+    input2 		: in std_logic_vector (31 downto 0);
+    op_ctrl 		: in std_logic_vector (5 downto 0);
+    z_flag_out 		: out std_logic;
+    output 		: out std_logic_vector (31 downto 0)  
     );
 end ALU;
 
 architecture Behavioral of ALU is 
 
-signal o_flag : std_logic;
-signal c_flag : std_logic;
-signal f_flag : std_logic;
-signal z_flag : std_logic;
-signal n_flag : std_logic;
-signal flag_output: std_logic_vector (32 downto 0);
+signal o_flag : std_logic := '0';
+signal c_flag : std_logic := '0';
+signal f_flag : std_logic := '0';
+signal z_flag : std_logic := '0';
+signal n_flag : std_logic := '0';
+signal flag_output: std_logic_vector (32 downto 0) := (others => '0');
 
 begin 
 

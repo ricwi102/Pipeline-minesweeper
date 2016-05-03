@@ -16,8 +16,8 @@ end ALU_mux;
 
 
 architecture Behavioral of ALU_mux is
-signal r_internal : std_logic_vector(31 downto 0);
-signal IM2    : std_logic_vector(31 downto 0);
+signal r_internal : std_logic_vector(31 downto 0) := (others => '0');
+signal IM2    : std_logic_vector(31 downto 0) := (others => '0');
 alias command : std_logic_vector(5 downto 0) is IR2(31 downto 26);
 
 begin

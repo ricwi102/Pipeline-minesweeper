@@ -16,9 +16,9 @@ entity register_mux is
 end register_mux;
 
 architecture Behavioral of register_mux is
-signal D4_help : std_logic_vector (31 downto 0);
-signal Z4_help : std_logic_vector (31 downto 0);
-signal IR4_help : std_logic_vector (31 downto 0);
+signal D4_help : std_logic_vector (31 downto 0) := (others => '0');
+signal Z4_help : std_logic_vector (31 downto 0) := (others => '0');
+signal IR4_help : std_logic_vector (31 downto 0) := (others => '0');
 alias command : std_logic_vector(5 downto 0) is IR4_help(31 downto 26);
   
 begin

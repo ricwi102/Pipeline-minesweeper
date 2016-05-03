@@ -23,10 +23,10 @@ end IR;
 architecture Behavioral of IR is
   
   --The Value of the IR components.
-  signal IR1_value      :std_logic_vector(31 downto 0);
-  signal IR2_value      :std_logic_vector(31 downto 0);
-  signal IR3_value      :std_logic_vector(31 downto 0);
-  signal IR4_value      :std_logic_vector(31 downto 0);
+  signal IR1_value      :std_logic_vector(31 downto 0) := (others => '0');
+  signal IR2_value      :std_logic_vector(31 downto 0) := (others => '0');
+  signal IR3_value      :std_logic_vector(31 downto 0) := (others => '0');
+  signal IR4_value      :std_logic_vector(31 downto 0) := (others => '0');
 
 
 begin
