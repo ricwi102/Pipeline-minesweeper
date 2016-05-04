@@ -10,11 +10,14 @@ entity connection_reg_mux is
 	 IR2_in		: in std_logic_vector(31 downto 0);	--External IR2 input.
 	 IR3_in		: in std_logic_vector(31 downto 0);	--External IR3 input.
 	 IR4_in		: in std_logic_vector(31 downto 0);	--External IR4 input.
+
 	 B2_mux		: in std_logic_vector(31 downto 0);	--
-	 A2_mux		: in std_logic_vector(31 downto 0);	--
-	 z_flag 	: out std_logic;
+	 A2_mux		: in std_logic_vector(31 downto 0);	--	
 	 A2, B2		: out std_logic_vector(31 downto 0);	--A2 and B2 registers.
-	 D4_Z4_data	: out std_logic_vector(31 downto 0)	--Either D4 or Z4, the mux chooses.
+	 D3		: out std_logic_vector(31 downto 0);
+	 D4_Z4_data	: out std_logic_vector(31 downto 0);	--Either D4 or Z4, the mux chooses.
+
+	 z_flag 	: out std_logic
 
 	);
 end connection_reg_mux;
@@ -85,13 +88,14 @@ signal DM_adr 		: std_logic_vector (8 downto 0) := (others => '0');
 
 alias read_adr_int1	: std_logic_vector (4 downto 0) is IR1_in(20 downto 16);
 alias read_adr_int2	: std_logic_vector (4 downto 0) is IR1_in(15 downto 11);
-alias command		: std_logic_vector (5 downto 0) is IR1_in(31 downto 26);
+alias command		: std_logic_vector (5 downto 0) is IR2_in(31 downto 26);
 
 begin
 
 DM_adr <= D3_int(8 downto 0);
 
 D4_Z4_data <= write_data;
+D3 <= D3_int;
 
 process(clk)
   begin 
@@ -100,10 +104,13 @@ process(clk)
     end if; 
 end process;
 
+
+---- PORT MAPS ----
+
+
 U0 : Regs port map(clk => clk, rst => rst, w_enable => we_internal, 
 		   out1 => A2 , out2 => B2 , write_in => write_data ,
-		   read_address1 => read_adr_int1, read_address2 => read_adr_int2, write_address => adr_internal ); 	
-
+		   read_address1 => read_adr_int1, read_address2 => read_adr_int2, write_address => adr_internal ); 
 
 U1 : ALU_mux port map(clk => clk, rst => rst,
 		      reg => B2_mux, IR1 => IR1_in , IR2 => IR2_in, output => ALU_mux_out);	

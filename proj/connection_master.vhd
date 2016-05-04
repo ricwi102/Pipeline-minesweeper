@@ -52,6 +52,7 @@ component connection_reg_mux
 	 A2_mux		: in std_logic_vector(31 downto 0);
 	 z_flag         : out std_logic;
 	 A2, B2		: out std_logic_vector(31 downto 0);
+	 D3		: out std_logic_vector(31 downto 0);
 	 D4_Z4_data	: out std_logic_vector(31 downto 0)
 
 	);
@@ -89,7 +90,7 @@ U1 : connection_reg_mux port map(clk => clk, rst => rst,
 		  		  IR1_in => IR1_internal, IR2_in => IR2_internal,
 				  IR3_in => IR3_internal, IR4_in => IR4_internal,
 				  A2_mux => ALU_A, B2_mux => ALU_B, A2 => A2, B2 => B2,		  
-				  D4_Z4_data => D4_Z4,
+				  D3 => D3, D4_Z4_data => D4_Z4,
 				  z_flag => z_flag_internal);	
 
 
