@@ -299,10 +299,10 @@ architecture Behavioral of VGA_MOTOR is
 		  
 begin
 
-  -- Clock divisor
+   -- Clock divisor
   -- Divide system clock (100 MHz) by 4
   process(clk)
-   begin
+  begin
     if rising_edge(clk) then
       if rst='1' then
 	ClkDiv <= (others => '0');
@@ -317,110 +317,55 @@ begin
 	
 	
   -- Horizontal pixel counter
-process(clk)
-  begin
-    if rising_edge(clk) then
-      if rst='1' then
-	Xpixel <= "0000000000";
-      else
-        
-        if Clk25 = '1' then
-          
-          if Xpixel = "1100100000" then
-            Xpixel <= "0000000000";
-	  else
-            Xpixel <= Xpixel + 1;
-          end if;
-          
-        end if;
-          
-      end if;
-    end if;
-  end process;
-
-
-
-  
-  -- Horizontal sync
- process(clk)
-  begin
-    if rising_edge(clk) then
-      if rst='1' then
-	Hsync <= '0';
-      else
-        if Xpixel > 656 and Xpixel < 753 then
-          Hsync <= '1';
-        else
-          Hsync <= '0';
-        end if;
-          
-      end if;
-    end if;
-  end process;
-  
-
-  
-  -- Vertical pixel counter
-process(clk)
-  begin
-    if rising_edge(clk) then
-      if rst='1' then
-	Ypixel <= "0000000000";
-      else        
-        if Clk25 = '1' and Xpixel = "1100100000" then     
-          if Ypixel = "1000001001" then
-            Ypixel <= "0000000000";
-          else
-            Ypixel <= Ypixel + 1;
-          end if;      
-        end if;       
-      end if;
-    end if;
-  end process;
-
-	
-
-  -- Vertical sync
   process(clk)
   begin
     if rising_edge(clk) then
-      if rst='1' then
-	Vsync <= '0';
-      else
-
-        if 490 < Ypixel and 493 > Ypixel then
-          Vsync <= '1';
-        else
-          Vsync <= '0';
+      if (rst = '1') then
+        Xpixel <= (others => '0');
+      elsif (Clk25 = '1') then      
+        if(Xpixel = 799) then
+          Xpixel <= (others => '0');
+        else            
+          Xpixel <= Xpixel + 1;
         end if;
-          
       end if;
     end if;
   end process;
+  
+  -- Horizontal sync
+  Hsync <= '0' when (Xpixel >= 656 and Xpixel <= 752) else '1';
+
+  
+  -- Vertical pixel counter
+  process(clk)
+  begin
+    if rising_edge(clk) then
+      if (rst = '1') then
+        Ypixel <= (others => '0');
+      elsif(Clk25 = '1') then
+        if(Xpixel = 799) then         
+          if(Ypixel = 520) then
+            Ypixel <= (others => '0');
+          else
+            Ypixel <= Ypixel + 1;          
+          end if;
+        end if;
+      end if;
+    end if;
+  end process; 	
+
+  -- Vertical sync
+  Vsync <= '0' when (Ypixel >= 490 and Ypixel <= 492) else '1';
+    
 
 
 
   
   -- Video blanking signal
-  process(clk)
-  begin
-    if rising_edge(clk) then
-      if rst='1' then
-	blank <= '0';
-      else
 
-        if 640 < Xpixel or 480 < Ypixel then
-          blank <= '1';
-        else
-          blank <= '0';
-        end if;
-          
-      end if;
-    end if;
-  end process;
-
+  Blank <= '1' when (Xpixel >= 640 or Ypixel >= 480) else '0';
+       
   
-
 
   
   -- Tile memory
@@ -434,7 +379,6 @@ process(clk)
       end if;
     end if;
   end process;
-	
 
 
   -- Tile memory address composite
@@ -454,6 +398,7 @@ process(clk)
   vgaGreen(0)   <= tilePixel(2);
   vgaBlue(2) 	<= tilePixel(1);
   vgaBlue(1) 	<= tilePixel(0);
+  
 
 
 end Behavioral;
