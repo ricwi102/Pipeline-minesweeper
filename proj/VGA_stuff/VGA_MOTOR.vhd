@@ -1,9 +1,3 @@
---------------------------------------------------------------------------------
--- VGA MOTOR
--- Anders Nilsson
--- 16-feb-2016
--- Version 1.1
-
 
 -- library declaration
 library IEEE;
@@ -41,298 +35,266 @@ architecture Behavioral of VGA_MOTOR is
 	
 
   -- Tile memory type
-  type ram_t is array (0 to 2047) of std_logic_vector(7 downto 0);
+  type ram_t is array (0 to 2047) of std_logic_vector(15 downto 0);
 
 -- Tile memory
   signal tileMem : ram_t := 
-		( x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",      -- space
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+		( x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"00",x"db",x"00",x"00",x"db",x"00",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"00",x"00",x"ff",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"00",x"00",x"ff",x"ff",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"6d",    -- bomb
+                  x"6d",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"00",x"db",x"00",x"00",x"db",x"00",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
 
-		  x"FF",x"FF",x"00",x"00",x"00",x"FF",x"FF",x"FF",	-- A
-		  x"FF",x"00",x"00",x"FF",x"00",x"00",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"6d",    -- eight
+                  x"6d",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
 
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",      -- B
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"db",x"db",x"6d",    -- five
+                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"40",x"40",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"40",x"40",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
 
-		  x"FF",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",      -- C
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"FF",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"e0",x"e0",x"e0",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"e0",x"e0",x"e0",x"e0",x"e0",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"e0",x"e0",x"e0",x"e0",x"e0",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"e0",x"e0",x"e0",x"92",x"92",x"92",x"92",x"6d",x"6d",    -- flag
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"00",x"00",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"00",x"00",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"00",x"00",x"00",x"00",x"00",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
 
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- D
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"db",x"db",x"db",x"6d",    -- four
+                  x"6d",x"db",x"db",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",    -- normaltile
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",    -- one
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",    -- pressedtile
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"03",x"03",x"03",x"03",x"03",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"03",x"03",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"03",x"03",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"03",x"03",x"92",x"92",x"92",x"92",x"6d",x"6d",    -- questionmark
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"03",x"03",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"03",x"03",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"03",x"03",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"03",x"03",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"6d",    -- seven
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"00",x"fc",x"fc",x"00",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",    -- simleysad
+                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"00",x"00",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"fc",x"fc",x"00",x"fc",x"fc",x"00",x"fc",x"fc",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",    -- six
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"1f",x"1f",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"1f",x"1f",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"00",x"fc",x"fc",x"00",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",    -- smileyhappy
+                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"fc",x"fc",x"00",x"fc",x"fc",x"fc",x"fc",x"00",x"fc",x"fc",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"fc",x"fc",x"00",x"00",x"00",x"00",x"fc",x"fc",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"db",x"6d",    -- three
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"30",x"30",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"30",x"30",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"6d",    -- two
+                  x"6d",x"db",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d"
+
                   
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- E
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- F
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- G
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- H
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- I
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- J
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- K
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- L
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- M
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- N
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- O
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- P
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- Q
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- R
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- S
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- T
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- U
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- V
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",  -- W
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"E0",x"E0",x"FF",x"FF",x"FF",x"E0",x"E0",x"FF",	-- X
-		  x"FF",x"E0",x"E0",x"FF",x"E0",x"E0",x"FF",x"FF",
-		  x"FF",x"FF",x"E0",x"E0",x"E0",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"E0",x"E0",x"E0",x"FF",x"FF",x"FF",
-		  x"FF",x"E0",x"E0",x"FF",x"E0",x"E0",x"FF",x"FF",
-		  x"E0",x"E0",x"FF",x"FF",x"FF",x"E0",x"E0",x"FF",
-		  x"E0",x"FF",x"FF",x"FF",x"FF",x"FF",x"E0",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"1C",x"1C",x"FF",x"FF",x"1C",x"1C",x"FF",      -- Y
-		  x"FF",x"1C",x"1C",x"FF",x"FF",x"1C",x"1C",x"FF",
-		  x"FF",x"1C",x"1C",x"FF",x"FF",x"1C",x"1C",x"FF",
-		  x"FF",x"FF",x"1C",x"1C",x"1C",x"1C",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"1C",x"1C",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"1C",x"1C",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"1C",x"1C",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"FF",      -- Z
-		  x"FF",x"FF",x"FF",x"FF",x"03",x"03",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"03",x"03",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"03",x"03",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"03",x"03",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"03",x"03",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"00",x"FF",x"FF",x"FF",x"FF",      -- Å
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"00",x"FF",x"00",x"FF",x"FF",x"FF",      -- Ä
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"00",x"FF",x"00",x"FF",x"FF",x"FF",      -- Ö
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"00",x"00",x"FF",x"FF",x"FF",x"00",x"00",x"FF",
-		  x"FF",x"00",x"00",x"00",x"00",x"00",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-		  x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",
-
-		  x"FF",x"FF",x"27",x"27",x"27",x"27",x"FF",x"FF",      -- PACMAN CURSOR
-		  x"FF",x"27",x"27",x"27",x"27",x"27",x"27",x"FF",
-		  x"27",x"27",x"27",x"27",x"E0",x"27",x"FF",x"FF",
-		  x"27",x"27",x"27",x"27",x"27",x"FF",x"FF",x"FF",
-		  x"27",x"27",x"27",x"27",x"27",x"FF",x"FF",x"FF",
-		  x"27",x"27",x"27",x"27",x"27",x"27",x"FF",x"FF",
-		  x"FF",x"27",x"27",x"27",x"27",x"27",x"27",x"FF",
-		  x"FF",x"FF",x"27",x"27",x"27",x"27",x"FF",x"FF"
-
                   );
 		  
 begin

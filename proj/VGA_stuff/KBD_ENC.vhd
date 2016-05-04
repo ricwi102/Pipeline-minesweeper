@@ -1,9 +1,5 @@
 --------------------------------------------------------------------------------
 -- KBD ENC
--- Anders Nilsson
--- 16-feb-2016
--- Version 1.1
-
 
 -- library declaration
 library IEEE;
@@ -19,7 +15,9 @@ entity KBD_ENC is
          PS2KeyboardData	: in std_logic;			-- USB keyboard PS2 data
          data			: out std_logic_vector(7 downto 0);		-- tile data
          addr			: out unsigned(10 downto 0);	-- tile address
-         we			: out std_logic);		-- write enable
+         we			: out std_logic;		-- write enable
+         KBsignal               : out std_logic(7 downto 0));   -- Vector for keyboard where every bit represents a key-signal
+                                                               
 end KBD_ENC;
 
 -- architecture
@@ -41,8 +39,11 @@ architecture behavioral of KBD_ENC is
 
   signal ScanCode		: std_logic_vector(7 downto 0);	-- scan code
   signal TileIndex		: std_logic_vector(7 downto 0);	-- tile index
+
+  type action_type is (FLAG, QUESTION, MINE);                   -- declare state types for actions
+  signal action : action_type;                                  -- actions
   
-  type curmov_type is (FORWARD, BACKWARD, NEWLINE);		-- declare cursor movement types
+  type curmov_type is (_LEFT,_RIGHT, _DOWN, _UP, _STAND);	-- declare cursor movement types
   signal curMovement : curmov_type;				-- cursor movement
 	
   signal curposX		: unsigned(5 downto 0);		-- cursor X position
@@ -89,7 +90,7 @@ process(clk)
       if rst='1' then
         PS2Data_sr(10 downto 0) <= "00000000000";
       else
-        
+        -- Change to one line ?
         if PS2Clk_op = '1' then
           PS2Data_sr(0) <= PS2Data_sr(1);
           PS2Data_sr(1) <= PS2Data_sr(2);
@@ -159,51 +160,63 @@ process(clk)
         
       end if;
     end if;
-  end process;
+  end process; 
+-- 
+  process(clk)
+    begin
+      if rising_edge(clk) then
+        if rst='1' then
+          PS2state <= IDLE;    
+        else
+          if BC11 = '1' and ScanCode = x"76" and PS2state = IDLE then
+           KBsignal(0) <= '1';
+           PS2state <= MAKE/BREAK;
+          elsif BC11 = '1' and ScanCode = X"1D" and PS2state = IDLE then
+            KBsignal(1) <= '1';
+          elsif BC11 = '1' and ScanCode = X"1C" and PS2state = IDLE then
+            KBsignal(2) <= '1';
+          elsif BC11 = '1' and ScanCode = X"1B" and PS2state = IDLE then
+            KBsignal(3) <= '1';
+          elsif BC11 = '1' and ScanCode = X"23" and PS2state = IDLE then
+            KBsignal(4) <= '1';
+          elsif BC11 = '1' and ScanCode = X"24" and PS2state = IDLE then
+            KBsignal(5) <= '1';
+          elsif BC11 = '1' and ScanCode = X"15" and PS2state = IDLE then
+            KBsignal(6) <= '1';
+          elsif BC11 = '1' and ScanCode = X"2D" and PS2state = IDLE then
+            KBsignal(7) <= '1';
+
+          else
+            KBsignal <= "00000000";
+            
+          end if;
+        end if;    
+      end if;
+    end process;      
 
 	
 	
 
   -- Scan Code -> Tile Index mapping
   with ScanCode select
-    TileIndex <= x"00" when x"29",	-- space
-                 x"01" when x"1C",	-- A
-                 x"02" when x"32",	-- B
-		 x"03" when x"21",	-- C
-		 x"04" when x"23",	-- D
-		 x"05" when x"24",	-- E
-		 x"06" when x"2B",	-- F
-		 x"07" when x"34",	-- G
-		 x"08" when x"33",	-- H
-		 x"09" when x"43",	-- I
-		 x"0A" when x"3B",	-- J
-		 x"0B" when x"42",	-- K
-		 x"0C" when x"4B",	-- L
-		 x"0D" when x"3A",	-- M
-		 x"0E" when x"31",	-- N
-		 x"0F" when x"44",	-- O
-		 x"10" when x"4D",	-- P
-		 x"11" when x"15",	-- Q
-		 x"12" when x"2D",	-- R
-		 x"13" when x"1B",	-- S
-		 x"14" when x"2C",	-- T
-		 x"15" when x"3C",	-- U
-		 x"16" when x"2A",	-- V
-		 x"17" when x"1D",	-- W
-		 x"18" when x"22",	-- X
-		 x"19" when x"35",	-- Y
-		 x"1A" when x"1A",	-- Z
-                 x"1B" when x"54",      -- Å
-                 x"1C" when x"52",      -- Ä
-                 x"1D" when x"4C",      -- Ö
+    TileIndex <= x"00" when x"76",	-- ESC (reset)
+                 x"01" when x"1D",      -- W (UP)
+                 x"02" when x"1C",      -- A (LEFT)
+                 x"03" when x"1B",      -- S (DOWN)
+                 x"04" when x"23",      -- D (RIGHT)
+		 x"05" when x"24",	-- E (flag)
+		 x"06" when x"15",	-- Q (questionmark)
+		 x"07" when x"2D",	-- R (röj/mine)
 		 x"00" when others;
 						 
 						 
   -- set cursor movement based on scan code
   with ScanCode select
-    curMovement <= NEWLINE when x"5A",	        -- enter scancode (5A), so move cursor to next line
-                   BACKWARD when x"66",	        -- backspace scancode (66), so move cursor backward
-                   FORWARD when others;	        -- for all other scancodes, move cursor forward
+    curMovement <= _DOWN when x"1B",	        -- down scancode (1B), so move cursor to next line
+                   _UP when x"1D",	        -- up scancode (1D), so move cursor backward
+		   _LEFT when x"1C",		-- left scancode (1C), so move cursor backward
+		   _RIGHT when x"23",		-- right scancode (23), so move cursor backward
+                   _STAND when others;	        -- for all other scancodes, move cursor stand still
 
 
   -- curposX
@@ -215,25 +228,21 @@ process(clk)
       if rst='1' then
         curposX <= (others => '0');
       elsif (WRstate = WRCHAR) then
-        if (curMovement = FORWARD) then
-          if (curposX = 19) then
-            curposX <= (others => '0');
-          else
+        if (curMovement = _RIGHT) then
+          if ((curposX < 19) and (curposX >= 0)) then 
             curposX <= curposX + 1;
           end if;
-        elsif (curMovement = BACKWARD) then
-          if ((curposX = 0) and (curposY >= 0)) then
-            curposX <= to_unsigned(19, curposX'length);
-          else
+        elsif (curMovement = _LEFT) then
+          if ((curposX < 20) and (curposX > 0)) then 
             curposX <= curposX - 1;
           end if;
-        elsif (curMovement = NEWLINE) then
-          curposX <= (others => '0');
+        elsif (curMovement = _STAND) then
+          curposX <= curPosX;
         end if;
       end if;
     end if;
   end process;
-	
+
 
   -- curposY
   -- update cursor Y position based on current cursor position (curposX and curposY) and cursor
@@ -244,27 +253,19 @@ process(clk)
       if rst='1' then
         curposY <= (others => '0');
       elsif (WRstate = WRCHAR) then
-        if (curMovement = FORWARD) then
-          if (curposX = 19) then
-            if (curposY = 14) then
-              curposY <= (others => '0');
-            else
-              curposY <= curposY + 1;
-            end if;
-          end if;
-        elsif (curMovement = BACKWARD) then
-          if (curposX = 0) then
-            if (curposY = 0) then
-              curposY <= to_unsigned(14, curposY'length);
-            else
+        if (curMovement = UP) then
+            if ((curposY < 15) and (curposY > 0)) then
               curposY <= curposY - 1;
             end if;
           end if;
-        elsif (curMovement = NEWLINE) then
+        elsif (curMovement = DOWN) then
+            if ((curposY >= 0) and (curposY < 14)) then
+              curposY <= curposY + 1;
+            end if;
+          end if;
+        elsif (curMovement = STAND) then
           if (curposY = 14) then
-            curposY <= (others => '0');
-          else
-            curposY <= curposY + 1;
+            curposY <= curposY;
           end if;
         end if;
       end if;
