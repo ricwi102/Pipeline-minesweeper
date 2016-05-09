@@ -29,7 +29,7 @@ architecture Behavioral of VGA_MOTOR is
   signal	nextrow		: std_logic;	
 		
   signal 	tilePixel       : std_logic_vector(7 downto 0);	-- Tile pixel data
-  signal	tileAddr	: unsigned(12 downto 0);	-- Tile address
+  signal	tileAddr	: unsigned(10 downto 0);	-- Tile address
 
   signal        blank           : std_logic;                    -- blanking signal
 	
