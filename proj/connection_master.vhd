@@ -5,7 +5,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 
 entity connection_master is
-  port( clk, rst	: std_logic
+  port( clk, rst	: in std_logic
 
 
 	);
