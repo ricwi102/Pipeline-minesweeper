@@ -5,6 +5,12 @@
      behavior or data corruption.  It is strongly advised that
      users do not edit the contents of this file. -->
 <messages>
+<msg type="warning" file="HDLCompiler" num="871" delta="old" >"/edu/johmy592/minesweeper/proj/VGA_stuff/proj-synthdir/xst/synth/../../../VGA_MOTOR.vhd" Line 325: Using initial value <arg fmt="%s" index="1">&quot;0011&quot;</arg> for <arg fmt="%s" index="2">x_pos</arg> since it is never assigned
+</msg>
+
+<msg type="warning" file="HDLCompiler" num="871" delta="old" >"/edu/johmy592/minesweeper/proj/VGA_stuff/proj-synthdir/xst/synth/../../../VGA_MOTOR.vhd" Line 326: Using initial value <arg fmt="%s" index="1">&quot;0111&quot;</arg> for <arg fmt="%s" index="2">y_pos</arg> since it is never assigned
+</msg>
+
 <msg type="info" file="Xst" num="3010" delta="new" >&quot;<arg fmt="%s" index="1">/edu/johmy592/minesweeper/proj/VGA_stuff/VGA_lab.vhd</arg>&quot; line <arg fmt="%d" index="2">64</arg>: Output port &lt;<arg fmt="%s" index="3">data_out1</arg>&gt; of the instance &lt;<arg fmt="%s" index="4">U1</arg>&gt; is unconnected or connected to loadless signal.
 </msg>
 
@@ -14,12 +20,17 @@
 <msg type="warning" file="Xst" num="2999" delta="new" >Signal &apos;<arg fmt="%s" index="1">tileMem</arg>&apos;, unconnected in block &apos;<arg fmt="%s" index="2">VGA_MOTOR</arg>&apos;, is tied to its initial value.
 </msg>
 
+<msg type="warning" file="Xst" num="2999" delta="new" >Signal &apos;<arg fmt="%s" index="1">marker_rom</arg>&apos;, unconnected in block &apos;<arg fmt="%s" index="2">VGA_MOTOR</arg>&apos;, is tied to its initial value.
+</msg>
+
 <msg type="warning" file="Xst" num="3035" delta="new" >Index value(s) does not match array range for signal &lt;<arg fmt="%s" index="1">tileMem</arg>&gt;, simulation mismatch.
 </msg>
 
 <msg type="info" file="Xst" num="3040" delta="new" >The RAM &lt;<arg fmt="%s" index="1">Mram_pictMem</arg>&gt; will be implemented as a BLOCK RAM, absorbing the following register(s):</msg>
 
 <msg type="info" file="Xst" num="3040" delta="new" >The RAM &lt;<arg fmt="%s" index="1">Mram_tileMem</arg>&gt; will be implemented as a BLOCK RAM, absorbing the following register(s):</msg>
+
+<msg type="info" file="Xst" num="3040" delta="new" >The RAM &lt;<arg fmt="%s" index="1">Mram_marker_rom</arg>&gt; will be implemented as a BLOCK RAM, absorbing the following register(s):</msg>
 
 </messages>
 

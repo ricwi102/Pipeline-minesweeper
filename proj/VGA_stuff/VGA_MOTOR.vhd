@@ -4,13 +4,13 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;            -- basic IEEE library
 use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 
-
 -- entity
 entity VGA_MOTOR is
   port ( clk			: in std_logic;
 	 data			: in std_logic_vector(7 downto 0);
-	 addr			: out unsigned(10 downto 0);
 	 rst			: in std_logic;
+	 x_marker, y_marker	: in std_logic_vector(3 downto 0);
+	 addr			: out unsigned(10 downto 0);
 	 vgaRed		        : out std_logic_vector(2 downto 0);
 	 vgaGreen	        : out std_logic_vector(2 downto 0);
 	 vgaBlue		: out std_logic_vector(2 downto 1);
@@ -31,6 +31,9 @@ architecture Behavioral of VGA_MOTOR is
   signal 	tilePixel       : std_logic_vector(7 downto 0);	-- Tile pixel data
   signal	tileAddr	: unsigned(12 downto 0);	-- Tile address
 
+  signal 	markerPixel	: std_logic_vector(7 downto 0);
+  signal 	pixel_out	: std_logic_vector(7 downto 0);
+
   signal        blank           : std_logic;                    -- blanking signal
 	
 
@@ -43,15 +46,134 @@ architecture Behavioral of VGA_MOTOR is
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"00",x"db",x"00",x"00",x"db",x"00",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"00",x"00",x"ff",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"00",x"00",x"ff",x"ff",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"6d",    -- bomb
-                  x"6d",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"00",x"db",x"00",x"00",x"db",x"00",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",    -- pressedtile
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+		  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",    -- one
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+		  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"30",x"30",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"30",x"30",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"6d",    -- two
+                  x"6d",x"db",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"db",x"6d",    -- three
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+		  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"db",x"db",x"db",x"6d",    -- four
+                  x"6d",x"db",x"db",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+		  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"db",x"db",x"6d",    -- five
+                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"40",x"40",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"40",x"40",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+		  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",    -- six
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"1f",x"1f",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"1f",x"1f",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+
+		  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"6d",    -- seven
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
@@ -73,22 +195,22 @@ architecture Behavioral of VGA_MOTOR is
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
 
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"40",x"40",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"40",x"40",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"db",x"db",x"6d",    -- five
-                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"40",x"40",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"40",x"40",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"40",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",    -- normaltile
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",	
 
                   x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
@@ -107,74 +229,6 @@ architecture Behavioral of VGA_MOTOR is
                   x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
                   x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
 
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"db",x"db",x"db",x"6d",    -- four
-                  x"6d",x"db",x"db",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"01",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"01",x"01",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-
-                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",    -- normaltile
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",    -- one
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"03",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",    -- pressedtile
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-
                   x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
                   x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
@@ -191,20 +245,20 @@ architecture Behavioral of VGA_MOTOR is
                   x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
                   x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
                   x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+	
+		  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"f4",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"6d",    -- seven
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"f4",x"f4",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"00",x"db",x"00",x"00",x"db",x"00",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"00",x"00",x"ff",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"00",x"00",x"ff",x"ff",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"6d",    -- bomb
+                  x"6d",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"00",x"00",x"00",x"00",x"db",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"00",x"db",x"00",x"00",x"db",x"00",x"db",x"db",x"db",x"db",x"6d",
+                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
@@ -226,23 +280,6 @@ architecture Behavioral of VGA_MOTOR is
                   x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
                   x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
 
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",    -- six
-                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"1f",x"1f",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"1f",x"1f",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"1f",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-
                   x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
                   x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
@@ -258,44 +295,31 @@ architecture Behavioral of VGA_MOTOR is
                   x"db",x"db",x"92",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"92",x"6d",x"6d",
                   x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
                   x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"db",x"6d",    -- three
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"e0",x"e0",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"30",x"30",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"30",x"30",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"6d",    -- two
-                  x"6d",x"db",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"30",x"30",x"30",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"30",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d"
 
-                  
+		                                
                   );
+
+
+type  marker_t is array (0 to 255) of std_logic_vector(7 downto 0);
+signal marker_rom : marker_t := 
+		( x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",     -- Marked!
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"ff",x"e0",
+                  x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0");
+
 		  
 begin
 
@@ -366,38 +390,50 @@ begin
   Blank <= '1' when (Xpixel >= 640 or Ypixel >= 480) else '0';
        
   
-
-  
   -- Tile memory
   process(clk)
   begin
     if rising_edge(clk) then
-      if (blank = '0') then
-        tilePixel <= tileMem(to_integer(tileAddr));
+      if (blank = '0') then	
+          tilePixel <= tileMem(to_integer(tileAddr));	
       else
         tilePixel <= (others => '0');
       end if;
     end if;
   end process;
 
+ process(clk)
+ begin
+   if rising_edge(clk) then
+     if ((Ypixel(7 downto 4) = unsigned(y_marker)) and (Xpixel(7 downto 4) = unsigned(x_marker))) then
+	markerPixel <= marker_rom(to_integer(Ypixel(3 downto 0) & Xpixel(3 downto 0) ));
+     else
+	markerPixel <= (others => '1');
+     end if;
+   end if;
+ end process;
 
   -- Tile memory address composite
   tileAddr <= unsigned(data(4 downto 0)) & Ypixel(3 downto 0) & Xpixel(3 downto 0);
 
 
   -- Picture memory address composite
-  addr <= to_unsigned(16, 7) * Ypixel(7 downto 4) + Xpixel(8 downto 4);
+  addr <= to_unsigned(16, 7) * Ypixel(7 downto 4) + Xpixel(7 downto 4);
 
 
   -- VGA generation
-  vgaRed(2) 	<= tilePixel(7);
-  vgaRed(1) 	<= tilePixel(6);
-  vgaRed(0) 	<= tilePixel(5);
-  vgaGreen(2)   <= tilePixel(4);
-  vgaGreen(1)   <= tilePixel(3);
-  vgaGreen(0)   <= tilePixel(2);
-  vgaBlue(2) 	<= tilePixel(1);
-  vgaBlue(1) 	<= tilePixel(0);
+ 
+ 
+  pixel_out <= tilePixel when (markerPixel = x"ff") else markerPixel;
+
+  vgaRed(2) 	<= pixel_out(7);
+  vgaRed(1) 	<= pixel_out(6);
+  vgaRed(0) 	<= pixel_out(5);
+  vgaGreen(2)   <= pixel_out(4);
+  vgaGreen(1)   <= pixel_out(3);
+  vgaGreen(0)   <= pixel_out(2);
+  vgaBlue(2) 	<= pixel_out(1);
+  vgaBlue(1) 	<= pixel_out(0);
   
 
 

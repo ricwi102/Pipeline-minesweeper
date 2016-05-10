@@ -1,5 +1,5 @@
 //! **************************************************************************
-// Written by: Map M.81d on Mon May 09 11:49:33 2016
+// Written by: Map M.81d on Tue May 10 11:38:48 2016
 //! **************************************************************************
 
 SCHEMATIC START;
@@ -17,17 +17,19 @@ COMP "vgaRed<1>" LOCATE = SITE "V7" LEVEL 1;
 COMP "vgaRed<2>" LOCATE = SITE "N7" LEVEL 1;
 PIN U1/Mram_pictMem_pins<22> = BEL "U1/Mram_pictMem" PINNAME CLKA;
 PIN U1/Mram_pictMem_pins<23> = BEL "U1/Mram_pictMem" PINNAME CLKB;
+PIN U2_Mram_marker_rom_pins<10> = BEL "U2_Mram_marker_rom" PINNAME CLKAWRCLK;
 PIN U2_Mram_tileMem2_pins<12> = BEL "U2_Mram_tileMem2" PINNAME CLKA;
 PIN U2_Mram_tileMem1_pins<12> = BEL "U2_Mram_tileMem1" PINNAME CLKA;
 TIMEGRP sys_clk_pin = BEL "U2/ClkDiv_1" BEL "U2/ClkDiv_0" BEL "U2/Xpixel_0"
-        BEL "U2/Ypixel_8" BEL "U2/Ypixel_7" BEL "U2/Ypixel_9" BEL
+        BEL "U2/Ypixel_9" BEL "U2/Ypixel_8" BEL "U2/Ypixel_7" BEL
         "U2/Ypixel_6" BEL "U2/Ypixel_5" BEL "U2/Ypixel_4" BEL "U2/Ypixel_3"
         BEL "U2/Ypixel_2" BEL "U2/Ypixel_1" BEL "U2/Xpixel_9" BEL
         "U2/Xpixel_8" BEL "U2/Xpixel_7" BEL "U2/Xpixel_6" BEL "U2/Xpixel_5"
         BEL "U2/Xpixel_4" BEL "U2/Xpixel_3" BEL "U2/Xpixel_2" BEL
         "U2/Xpixel_1" BEL "U2/Ypixel_0" BEL "clk_BUFGP/BUFG" PIN
         "U1/Mram_pictMem_pins<22>" PIN "U1/Mram_pictMem_pins<23>" PIN
-        "U2_Mram_tileMem2_pins<12>" PIN "U2_Mram_tileMem1_pins<12>";
+        "U2_Mram_marker_rom_pins<10>" PIN "U2_Mram_tileMem2_pins<12>" PIN
+        "U2_Mram_tileMem1_pins<12>";
 TS_sys_clk_pin = PERIOD TIMEGRP "sys_clk_pin" 100 MHz HIGH 50%;
 SCHEMATIC END;
 
