@@ -9,7 +9,7 @@ entity VGA_MOTOR is
   port ( clk			: in std_logic;
 	 data			: in std_logic_vector(7 downto 0);
 	 rst			: in std_logic;
-	 x_marker, y_marker	: in std_logic_vector(3 downto 0);
+	-- x_marker, y_marker	: in std_logic_vector(3 downto 0);
 	 addr			: out unsigned(10 downto 0);
 	 vgaRed		        : out std_logic_vector(2 downto 0);
 	 vgaGreen	        : out std_logic_vector(2 downto 0);
@@ -321,6 +321,8 @@ signal marker_rom : marker_t :=
                   x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0");
 
 		  
+ signal x_pos  : std_logic_vector(4 downto 0) := "00001";	 
+ signal y_pos  : std_logic_vector(3 downto 0) := x"4";
 begin
 
    -- Clock divisor
@@ -405,8 +407,8 @@ begin
  process(clk)
  begin
    if rising_edge(clk) then
-     if ((Ypixel(7 downto 4) = unsigned(y_marker)) and (Xpixel(7 downto 4) = unsigned(x_marker))) then
-	markerPixel <= marker_rom(to_integer(Ypixel(3 downto 0) & Xpixel(3 downto 0) ));
+     if ((Ypixel(8 downto 5) = unsigned(y_pos)) and (Xpixel(9 downto 5) = unsigned(x_pos))) then
+	markerPixel <= marker_rom(to_integer(Ypixel(4 downto 1) & Xpixel(4 downto 1) ));
      else
 	markerPixel <= (others => '1');
      end if;
@@ -414,11 +416,11 @@ begin
  end process;
 
   -- Tile memory address composite
-  tileAddr <= unsigned(data(4 downto 0)) & Ypixel(3 downto 0) & Xpixel(3 downto 0);
+  tileAddr <= unsigned(data(4 downto 0)) & Ypixel(4 downto 1) & Xpixel(4 downto 1);
 
 
   -- Picture memory address composite
-  addr <= to_unsigned(16, 7) * Ypixel(7 downto 4) + Xpixel(7 downto 4);
+  addr <= to_unsigned(20, 7) * Ypixel(8 downto 5) + Xpixel(9 downto 5);
 
 
   -- VGA generation
