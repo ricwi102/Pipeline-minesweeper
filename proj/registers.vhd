@@ -10,7 +10,8 @@ entity Regs is
     out1, out2 			 : out std_logic_vector (31 downto 0);
     write_in 			 : in std_logic_vector (31 downto 0);      
     read_address1, read_address2 : in std_logic_vector (4 downto 0);
-    write_address 		 : in std_logic_vector (4 downto 0)
+    write_address 		 : in std_logic_vector (4 downto 0);
+    keyboard_in			 : in std_logic_vector (3 downto 0)
     );
 end Regs;
 
