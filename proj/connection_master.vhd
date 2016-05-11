@@ -5,8 +5,10 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 
 entity connection_master is
-  port( clk, rst	: in std_logic
+  port( clk, rst	: in std_logic;
 
+	PS2KeyboardCLK      : in std_logic;
+    	PS2KeyboardData     : in std_logic
 
 	);
 end connection_master;
@@ -53,7 +55,10 @@ component connection_reg_mux
 	 z_flag         : out std_logic;
 	 A2, B2		: out std_logic_vector(31 downto 0);
 	 D3		: out std_logic_vector(31 downto 0);
-	 D4_Z4_data	: out std_logic_vector(31 downto 0)
+	 D4_Z4_data	: out std_logic_vector(31 downto 0);
+
+	 PS2KeyboardCLK      : in std_logic;
+    	 PS2KeyboardData     : in std_logic
 
 	);
 end component;
@@ -91,7 +96,7 @@ U1 : connection_reg_mux port map(clk => clk, rst => rst,
 				  IR3_in => IR3_internal, IR4_in => IR4_internal,
 				  A2_mux => ALU_A, B2_mux => ALU_B, A2 => A2, B2 => B2,		  
 				  D3 => D3, D4_Z4_data => D4_Z4,
-				  z_flag => z_flag_internal);	
+				  z_flag => z_flag_internal, PS2KeyboardCLK => PS2KeyboardCLK, PS2KeyboardData => PS2KeyboardData);	
 
 
 

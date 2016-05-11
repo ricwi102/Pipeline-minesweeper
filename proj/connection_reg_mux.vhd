@@ -18,7 +18,9 @@ entity connection_reg_mux is
 	 D4_Z4_data	: out std_logic_vector(31 downto 0);	--Either D4 or Z4, the mux chooses.
 
 	 z_flag 	: out std_logic
-
+					
+	 PS2KeyboardCLK      : in std_logic;
+    	 PS2KeyboardData     : in std_logic;
 	);
 end connection_reg_mux;
 
@@ -33,7 +35,9 @@ component Regs is
     out1, out2 			 : out std_logic_vector (31 downto 0);
     write_in 			 : in std_logic_vector (31 downto 0);      
     read_address1, read_address2 : in std_logic_vector (4 downto 0);
-    write_address 		 : in std_logic_vector (4 downto 0)
+    write_address 		 : in std_logic_vector (4 downto 0);
+    make_op_in			 : in std_logic;
+    keyboard_in			 : in std_logic_vector(3 downto 0)
     );
 end component;
 
@@ -78,6 +82,15 @@ component data_minne is
 	);
 end component;
 
+component keyboard_handler is
+  port (clk                 : in std_logic;
+    	rst                 : in std_logic;
+    	PS2KeyboardCLK      : in std_logic;
+    	PS2KeyboardData     : in std_logic;
+    	MakeOpOut	    : out std_logic;
+    	KeyPressedOut       : out std_logic_vector(3 downto 0)
+    	);
+
 signal write_data 	: std_logic_vector (31 downto 0) := (others => '0');
 signal we_internal	: std_logic := '0';
 signal ALU_mux_out	: std_logic_vector (31 downto 0) := (others => '0');
@@ -85,6 +98,9 @@ signal D3_int,D4_int	: std_logic_vector (31 downto 0) := (others => '0');
 signal Z4_int		: std_logic_vector (31 downto 0) := (others => '0');
 signal adr_internal 	: std_logic_vector (4 downto 0) := (others => '0');
 signal DM_adr 		: std_logic_vector (8 downto 0) := (others => '0');
+
+signal MakeOp_internal  : std_logic;
+signal KeyPressed_int	: std_logic_vector(3 downto 0);
 
 alias read_adr_int1	: std_logic_vector (4 downto 0) is IR1_in(20 downto 16);
 alias read_adr_int2	: std_logic_vector (4 downto 0) is IR1_in(15 downto 11);
@@ -110,7 +126,8 @@ end process;
 
 U0 : Regs port map(clk => clk, rst => rst, w_enable => we_internal, 
 		   out1 => A2 , out2 => B2 , write_in => write_data ,
-		   read_address1 => read_adr_int1, read_address2 => read_adr_int2, write_address => adr_internal ); 
+		   read_address1 => read_adr_int1, read_address2 => read_adr_int2, write_address => adr_internal, make_op_in => MakeOp_internal,
+		    keyboard_in => KeyPressed_int); 
 
 U1 : ALU_mux port map(clk => clk, rst => rst,
 		      reg => B2_mux, IR1 => IR1_in , IR2 => IR2_in, output => ALU_mux_out);	
@@ -123,6 +140,9 @@ U2 : register_mux port map(D4 => D4_int, Z4 => Z4_int, IR4 => IR4_in,
 U3 : ALU port map(clk => clk, input1 => ALU_mux_out, input2 => A2_mux, op_ctrl => command, z_flag_out => z_flag , output => D3_int); 
 
 U4 : data_minne port map(clk => clk, adr => DM_adr , data_in => B2_mux, data_out => Z4_int, IR3_in => IR3_in);
+
+U5 : keyboard_handler port map(clk => clk, rst => rst, PS2KeyboardCLK => PS2KeyboardCLK, PS2KeyboardData => PS2KeyboardData, MakeOpOut => MakeOp_internal,
+				KeyPressedOut => KeyPressed_int);
 
 
 end Behavioral;
