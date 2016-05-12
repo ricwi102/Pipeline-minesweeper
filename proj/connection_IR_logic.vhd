@@ -79,8 +79,9 @@ architecture Behavioral of connection_IR_logic is
 
 
   component PM
-  port(	clk, rst,rx	: in std_logic;    	
-    	address		: in std_logic_vector(31 downto 0);    	
+  port(	clk, rst	: in std_logic;    	
+    	address		: in std_logic_vector(31 downto 0);
+			rx				: in std_logic;    	
     	instr_out	: out std_logic_vector(31 downto 0)
 	);
   end component;

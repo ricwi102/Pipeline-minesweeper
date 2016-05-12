@@ -13,13 +13,16 @@ use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 
 -- entity
 entity VGA_lab is
-  port ( clk	                : in std_logic;                         -- system clock
-	 rst                    : in std_logic;                         -- reset
-	 Hsync	                : out std_logic;                        -- horizontal sync
-	 Vsync	                : out std_logic;                        -- vertical sync
-	 vgaRed	                : out	std_logic_vector(2 downto 0);   -- VGA red
-	 vgaGreen               : out std_logic_vector(2 downto 0);     -- VGA green
-	 vgaBlue	        : out std_logic_vector(2 downto 1));     -- VGA blue
+  port (clk	                	: in std_logic;                         -- system clock
+	 			rst                   : in std_logic;                         -- reset
+				IR3_in								: in std_logic_vector(31 downto 0);
+				Z3_in									: in std_logic_vector(31 downto 0);
+				D3_in									: in std_logic_vector(31 downto 0);
+	 			Hsync	                : out std_logic;                        -- horizontal sync
+	 			Vsync	                : out std_logic;                        -- vertical sync
+	 			vgaRed	              : out	std_logic_vector(2 downto 0);   -- VGA red
+			 	vgaGreen              : out std_logic_vector(2 downto 0);     -- VGA green
+			 	vgaBlue	        			: out std_logic_vector(2 downto 1));     -- VGA blue
 end VGA_lab;
 
 
@@ -28,17 +31,14 @@ architecture Behavioral of VGA_lab is
 
   -- picture memory component
   component PICT_MEM
-    port ( clk			: in std_logic;                         -- system clock
+    port ( clk						: in std_logic;                         -- system clock
 	 -- port 1
-           we1		        : in std_logic;                         -- write enable
-           data_in1	        : in std_logic_vector(7 downto 0);      -- data in
-           data_out1	        : out std_logic_vector(7 downto 0);     -- data out
+           IR3_in	        : in std_logic_vector(31 downto 0);                         
+           data_in	      : in std_logic_vector(7 downto 0);      -- data in
            addr1	        : in unsigned(10 downto 0);             -- address
 	 -- port 2
-           we2			: in std_logic;                         -- write enable
-           data_in2	        : in std_logic_vector(7 downto 0);      -- data in
-           data_out2	        : out std_logic_vector(7 downto 0);     -- data out
-           addr2		: in unsigned(10 downto 0));            -- address
+           data_out	    : out std_logic_vector(7 downto 0);     -- data out
+           addr2					: in unsigned(10 downto 0));            -- address
   end component;
 	
   -- VGA motor component
@@ -61,7 +61,7 @@ architecture Behavioral of VGA_lab is
 begin
 
   -- picture memory component connection
-  U1 : PICT_MEM port map(clk=>clk, we1=>'0', data_in1=>"00000000", addr1=>"00000000000", we2=>'0', data_in2=>"00000000", data_out2=>data_out2_s, addr2=>addr2_s);
+  U1 : PICT_MEM port map(clk=>clk, IR3_in => IR3_in, data_in=>Z3_in(7 downto 0), addr1=>unsigned(D3_in(10 downto 0)), data_out=>data_out2_s, addr2=>addr2_s);
 	
   -- VGA motor component connection
   U2 : VGA_MOTOR port map(clk=>clk, rst=>rst, data=>data_out2_s, addr=>addr2_s, vgaRed=>vgaRed, vgaGreen=>vgaGreen, vgaBlue=>vgaBlue, Hsync=>Hsync, Vsync=>Vsync);

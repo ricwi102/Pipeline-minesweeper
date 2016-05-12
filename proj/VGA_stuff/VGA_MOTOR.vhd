@@ -25,24 +25,24 @@ architecture Behavioral of VGA_MOTOR is
   signal	Xpixel	        : unsigned(9 downto 0);         -- Horizontal pixel counter
   signal	Ypixel	        : unsigned(9 downto 0);		-- Vertical pixel counter
   signal	ClkDiv	        : unsigned(1 downto 0);		-- Clock divisor, to generate 25 MHz signal
-  signal	Clk25		: std_logic;			-- One pulse width 25 MHz signal
-  signal	nextrow		: std_logic;	
+  signal	Clk25						: std_logic;			-- One pulse width 25 MHz signal
+  signal	nextrow					: std_logic;	
 		
   signal 	tilePixel       : std_logic_vector(7 downto 0);	-- Tile pixel data
-  signal	tileAddr	: unsigned(12 downto 0);	-- Tile address
+  signal	tileAddr				: unsigned(12 downto 0);	-- Tile address
 
-  signal 	markerPixel	: std_logic_vector(7 downto 0);
-  signal 	pixel_out	: std_logic_vector(7 downto 0);
+  signal 	markerPixel			: std_logic_vector(7 downto 0);
+  signal 	pixel_out				: std_logic_vector(7 downto 0);
 
-  signal        blank           : std_logic;                    -- blanking signal
+  signal  blank           : std_logic;                    -- blanking signal
 	
 
   -- Tile memory type
-  type ram_t is array (0 to 3839) of std_logic_vector(7 downto 0);
+  type ram_t is array (0 to 3327) of std_logic_vector(7 downto 0);
 
 -- Tile memory
   signal tileMem : ram_t := 
-		( x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+		( 						x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
@@ -198,23 +198,6 @@ architecture Behavioral of VGA_MOTOR is
                   x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
                   x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",    -- normaltile
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",	
-
-                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
                   x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"e0",x"e0",x"e0",x"92",x"92",x"92",x"92",x"6d",x"6d",
                   x"db",x"db",x"92",x"92",x"92",x"e0",x"e0",x"e0",x"e0",x"e0",x"92",x"92",x"92",x"92",x"6d",x"6d",
                   x"db",x"db",x"92",x"92",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"92",x"92",x"92",x"92",x"6d",x"6d",
@@ -246,7 +229,7 @@ architecture Behavioral of VGA_MOTOR is
                   x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
                   x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
 	
-		  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
+		  						x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
                   x"6d",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
@@ -267,38 +250,18 @@ architecture Behavioral of VGA_MOTOR is
                   x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
                   x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
                   x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"00",x"fc",x"fc",x"00",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",    -- simleysad
-                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"00",x"00",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"fc",x"fc",x"00",x"fc",x"fc",x"00",x"fc",x"fc",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",    -- normaltile
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
+                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
                   x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
                   x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-
-                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",
-                  x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"db",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"00",x"fc",x"fc",x"00",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",    -- smileyhappy
-                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"fc",x"fc",x"00",x"fc",x"fc",x"fc",x"fc",x"00",x"fc",x"fc",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"fc",x"fc",x"00",x"00",x"00",x"00",x"fc",x"fc",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"fc",x"fc",x"fc",x"fc",x"fc",x"fc",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"db",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"92",x"6d",x"6d",
-                  x"db",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",
-                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d"
-
-		                                
-                  );
+                  x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d",x"6d");
 
 
 type  marker_t is array (0 to 255) of std_logic_vector(7 downto 0);

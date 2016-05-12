@@ -35,14 +35,10 @@ signal PL_count   : std_logic_vector(15 downto 0);
 begin 
 
 process(clk) begin
-  if rising_edge(clk) then
-    if (rst = '0') then
-      prog_mem_c <= (others => (others => '0'));
-    else
+  if rising_edge(clk) then    
       if (we = '1') then 
         prog_mem_c(conv_integer(PL_count)) <= instr_in;      
-      end if;
-    end if;
+      end if;    
   end if;
 end process;
 
