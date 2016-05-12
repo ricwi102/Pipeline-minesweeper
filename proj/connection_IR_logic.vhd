@@ -83,6 +83,7 @@ architecture Behavioral of connection_IR_logic is
 	);
   end component;
 
+  
 
   -- Interna
   signal IR1_value : std_logic_vector(31 downto 0) := (others => '0'); 	-- IR till JS
@@ -122,7 +123,6 @@ begin  -- Behavioral
 															z_flag_in => z_flag); 
 
  port3 : PM port map(clk => clk, rst => rst, address => PC_internal, instr_out => PM_internal);
-
 
 
 

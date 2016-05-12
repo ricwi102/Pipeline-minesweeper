@@ -11,11 +11,11 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 --use UNISIM.VComponents.all;
 
 entity program_loader is
-    Port ( clk,rst, rx 	: in  STD_LOGIC;
-           instr_out		: out STD_LOGIC_VECTOR(31 downto 0);
-					 PM_count_out : out std_logic_vector(15 downto 0);
-	   			 we_out				: out std_logic
-					);          
+    Port (clk,rst, rx 	: in  STD_LOGIC;
+          instr_out	: out STD_LOGIC_VECTOR(31 downto 0);
+	  PM_count_out  : out std_logic_vector(15 downto 0);
+	  we_out	: out std_logic
+	  );          
 end program_loader;
 
 architecture Behavioral of program_loader is

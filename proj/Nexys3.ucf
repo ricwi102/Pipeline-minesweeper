@@ -8,3 +8,16 @@ Net "clk" LOC=V10 | IOSTANDARD=LVCMOS33;
 Net "clk" TNM_NET = sys_clk_pin;
 TIMESPEC TS_sys_clk_pin = PERIOD sys_clk_pin 100000 kHz;
 
+Net "rst" LOC = B8 | IOSTANDARD = LVCMOS33; #Bank = 0, pin name = IO_L33P, Sch name = BTNS
+
+## Pic USB-HID interface
+Net "PS2KeyboardClk" LOC = L12 | IOSTANDARD = LVCMOS33 | PULLUP; #Bank = 1, pin name = IO_L40P_GCLK11_M1A5, Sch name = PIC-SCK1
+Net "PS2KeyboardData" LOC = J13 | IOSTANDARD = LVCMOS33 | PULLUP; #Bank = 1, pin name = IO_L39P_M1A3, Sch name = PIC-SDI1
+
+
+## Leds
+Net "r10_test<0>" LOC = U16 | IOSTANDARD = LVCMOS33; #Bank = 2, pin name = IO_L2P_CMPCLK, Sch name = LD0
+Net "r10_test<1>" LOC = V16 |  IOSTANDARD = LVCMOS33; #Bank = 2, pin name = IO_L2N_CMPMOSI, Sch name = LD1
+Net "r10_test<2>" LOC = U15 |  IOSTANDARD = LVCMOS33; #Bank = 2, pin name = IO_L5P, Sch name = LD2
+Net "r10_test<3>" LOC = V15 |  IOSTANDARD = LVCMOS33; #Bank = 2, pin name = IO_L5N, Sch name = LD3
+

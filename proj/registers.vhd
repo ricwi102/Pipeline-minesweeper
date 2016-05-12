@@ -12,7 +12,8 @@ entity Regs is
     read_address1, read_address2 : in std_logic_vector (4 downto 0);
     write_address 		 : in std_logic_vector (4 downto 0);
     make_op_in			 : in std_logic;
-    keyboard_in			 : in std_logic_vector (3 downto 0)
+    keyboard_in			 : in std_logic_vector (3 downto 0);
+    r10_test			 : out std_logic_vector(31 downto 0)	
     );
 end Regs;
 
@@ -45,7 +46,7 @@ begin  -- Behavioral
         when "00111" => r7 <= write_in;
 	when "01000" => r8 <= write_in;
         when "01001" => r9 <= write_in;
-        when "01010" => r10 <= write_in;  --Keyboard reserved
+       -- when "01010" => r10 <= write_in;  --Keyboard reserved
         when "01011" => r11 <= write_in;
         when others => null;
       end case;
@@ -55,6 +56,8 @@ begin  -- Behavioral
 
  out1 <= a2;
  out2 <= b2;
+
+ r10_test <= r10;
 
 temp_a <= r0 when (read_address1 = "00000") else
           r1 when (read_address1 = "00001") else

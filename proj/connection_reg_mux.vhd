@@ -17,10 +17,11 @@ entity connection_reg_mux is
 	 D3		: out std_logic_vector(31 downto 0);
 	 D4_Z4_data	: out std_logic_vector(31 downto 0);	--Either D4 or Z4, the mux chooses.
 
-	 z_flag 	: out std_logic
+	 z_flag 	: out std_logic;
 					
 	 PS2KeyboardCLK      : in std_logic;
     	 PS2KeyboardData     : in std_logic;
+	 r10_test	     : out std_logic_vector(31 downto 0)
 	);
 end connection_reg_mux;
 
@@ -37,7 +38,8 @@ component Regs is
     read_address1, read_address2 : in std_logic_vector (4 downto 0);
     write_address 		 : in std_logic_vector (4 downto 0);
     make_op_in			 : in std_logic;
-    keyboard_in			 : in std_logic_vector(3 downto 0)
+    keyboard_in			 : in std_logic_vector(3 downto 0);
+    r10_test			 : out std_logic_vector(31 downto 0)
     );
 end component;
 
@@ -90,6 +92,7 @@ component keyboard_handler is
     	MakeOpOut	    : out std_logic;
     	KeyPressedOut       : out std_logic_vector(3 downto 0)
     	);
+end component;
 
 signal write_data 	: std_logic_vector (31 downto 0) := (others => '0');
 signal we_internal	: std_logic := '0';
@@ -127,7 +130,7 @@ end process;
 U0 : Regs port map(clk => clk, rst => rst, w_enable => we_internal, 
 		   out1 => A2 , out2 => B2 , write_in => write_data ,
 		   read_address1 => read_adr_int1, read_address2 => read_adr_int2, write_address => adr_internal, make_op_in => MakeOp_internal,
-		    keyboard_in => KeyPressed_int); 
+		    keyboard_in => KeyPressed_int, r10_test => r10_test); 
 
 U1 : ALU_mux port map(clk => clk, rst => rst,
 		      reg => B2_mux, IR1 => IR1_in , IR2 => IR2_in, output => ALU_mux_out);	
