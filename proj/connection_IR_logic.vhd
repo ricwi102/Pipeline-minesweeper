@@ -17,12 +17,14 @@ entity connection_IR_logic is
     ALU_A_out   : out std_logic_vector(31 downto 0);  
     ALU_B_out   : out std_logic_vector(31 downto 0);
   
-    A2_in 	: in std_logic_vector(31 downto 0);
-    B2_in 	: in std_logic_vector(31 downto 0);
-    D3_in 	: in std_logic_vector(31 downto 0);
-    D4_Z4_in 	: in std_logic_vector(31 downto 0);
+    A2_in 			: in std_logic_vector(31 downto 0);
+    B2_in 			: in std_logic_vector(31 downto 0);
+    D3_in 			: in std_logic_vector(31 downto 0);
+    D4_Z4_in 		: in std_logic_vector(31 downto 0);
 
-    z_flag	: in std_logic
+    z_flag			: in std_logic;
+
+		rx					: in std_logic
     );
   
 end connection_IR_logic;
@@ -77,7 +79,7 @@ architecture Behavioral of connection_IR_logic is
 
 
   component PM
-  port(	clk, rst	: in std_logic;    	
+  port(	clk, rst,rx	: in std_logic;    	
     	address		: in std_logic_vector(31 downto 0);    	
     	instr_out	: out std_logic_vector(31 downto 0)
 	);
@@ -122,7 +124,7 @@ begin  -- Behavioral
 															PC_out => PC_internal,
 															z_flag_in => z_flag); 
 
- port3 : PM port map(clk => clk, rst => rst, address => PC_internal, instr_out => PM_internal);
+ port3 : PM port map(clk => clk, rst => rst, address => PC_internal, instr_out => PM_internal, rx => rx);
 
 
 

@@ -33,8 +33,8 @@ XILINX_INIT = source /sw/xilinx/ise_12.4i/ISE_DS/settings64.sh;
 PART=xc6slx16-3-csg324
 
 
-proj.%: S=dekoder.vhd modul1.vhd modul2.vhd IR.vhdl DM.vhd ALU_mux.vhd register_mux.vhd jump_and_stall.vhdl
-proj.%: T=dekoder_tb.vhd
+proj.%: S=connection_master.vhd connection_reg_mux.vhd connection_IR_logic.vhd ALU.vhd registers.vhd IR.vhd DM.vhd ALU_mux.vhd register_mux.vhd jump_stall.vhd dataforwarding.vhd keyboard_handler.vhd PM.vhd program_loader.vhd
+proj.%: T=keyboard_stuff/keyboard_handler_tb.vhd
 proj.%: U=Nexys3.ucf
 
 
