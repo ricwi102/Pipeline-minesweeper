@@ -16,14 +16,23 @@ end PM;
 architecture Behavioral of PM is
 
 type prog_mem is array (0 to 255) of std_logic_vector(31 downto 0);
-signal prog_mem_c : prog_mem := (others => (others => '0'));
+signal prog_mem_c : prog_mem := (b"000000_00000_00000_00000_00000000000",
+																 b"000000_00000_00000_00000_00000000000",
+																 b"000000_00000_00000_00000_00000000000",
+																 b"010110_00000_01010_00000_00000000100", -- cmp
+																 b"011101_00000_00000_00000_00000000000",	-- bne 0
+																 b"000000_00000_00000_00000_00000000000",	
+																 b"000110_01000_01000_00000_00000000001", -- ++
+																 b"000010_01010_00000_00000_00000000000", -- move 0
+																 b"011001_00000_00000_00000_00000000000", -- jmp 0
+																 others => (others => '0'));
 
 
 component program_loader
   Port (clk,rst,rx	  		: in  STD_LOGIC;
-				we_out			: out std_logic;
-        instr_out		: out STD_LOGIC_VECTOR(31 downto 0);	
-				PM_count_out		: out std_logic_vector(15 downto 0)	 				
+				we_out						: out std_logic;
+        instr_out					: out STD_LOGIC_VECTOR(31 downto 0);	
+				PM_count_out			: out std_logic_vector(15 downto 0)	 				
 				);          
 end component;
 

@@ -28,7 +28,7 @@ begin
   process(clk) begin
     if rising_edge(clk) then
       case op_ctrl is
-	when "000010" => flag_output <= ('0' & input1);	
+				when "000010" => flag_output <= ('0' & input1);	
         when "000011" => flag_output <= ('0' & input1) + ('0' & input2);
         when "000100" => flag_output <= ('0' & input1) + ('0' & input2);
         when "000101" => flag_output <= ('0' & input1) + ('0' & input2);
@@ -53,7 +53,7 @@ begin
                          flag_output(0) <= input1(conv_integer(input2));
         when "011000" => flag_output(32 downto 1) <= (others => '0');
                          flag_output(0) <= input1(conv_integer(input2));
-        when others => flag_output <= (others => '0');
+        when others => flag_output <= flag_output;
       end case;
     end if;
   end process;
@@ -62,5 +62,7 @@ begin
   c_flag <= flag_output(32);
   z_flag <= '1' when (conv_integer(flag_output(31 downto 0)) = 0) else '0';
   n_flag <= '1' when (conv_integer(flag_output(31 downto 0)) < 0) else '0';
+	
+	z_flag_out <= z_flag;
 
 end Behavioral;

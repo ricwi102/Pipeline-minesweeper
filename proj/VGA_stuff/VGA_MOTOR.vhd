@@ -6,16 +6,17 @@ use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 
 -- entity
 entity VGA_MOTOR is
-  port ( clk			: in std_logic;
-	 data			: in std_logic_vector(7 downto 0);
-	 rst			: in std_logic;
-	-- x_marker, y_marker	: in std_logic_vector(3 downto 0);
-	 addr			: out unsigned(10 downto 0);
-	 vgaRed		        : out std_logic_vector(2 downto 0);
-	 vgaGreen	        : out std_logic_vector(2 downto 0);
-	 vgaBlue		: out std_logic_vector(2 downto 1);
-	 Hsync		        : out std_logic;
-	 Vsync		        : out std_logic);
+  port ( clk							: in std_logic;
+				 data							: in std_logic_vector(7 downto 0);
+				 rst							: in std_logic;
+				 x_pos						: in std_logic_vector(4 downto 0); 
+				 y_pos						: in std_logic_vector(3 downto 0);
+				 addr							: out unsigned(10 downto 0);
+				 vgaRed		        : out std_logic_vector(2 downto 0);
+				 vgaGreen	        : out std_logic_vector(2 downto 0);
+				 vgaBlue					: out std_logic_vector(2 downto 1);
+				 Hsync		        : out std_logic;
+				 Vsync		        : out std_logic);
 end VGA_MOTOR;
 
 
@@ -284,8 +285,6 @@ signal marker_rom : marker_t :=
                   x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0",x"e0");
 
 		  
- signal x_pos  : std_logic_vector(4 downto 0) := "00001";	 
- signal y_pos  : std_logic_vector(3 downto 0) := x"4";
 begin
 
    -- Clock divisor

@@ -63,7 +63,8 @@ begin  -- Behoavioral
 
   j <= '1' when (command_ir2 = "011001" or command_ir2 = "011010") else '0';
   
-  z_flag_j <= '1' when (z_flag_in = '1' and (conv_integer(command_ir2) >= 27 and conv_integer(command_ir2) <= 31))
+  z_flag_j <= '1' when ((z_flag_in = '1' and conv_integer(command_ir2) >= 27 and conv_integer(command_ir2) <= 28) 
+												or (z_flag_in = '0' and conv_integer(command_ir2) >= 29 and conv_integer(command_ir2) <= 30))
               else '0';
   
   take_jump <= '1' when (j = '1' or z_flag_j = '1') else '0';

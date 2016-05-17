@@ -33,7 +33,9 @@ begin
                   or (command = "000000")
                   or (command = "000001")
                   or (command = "000100")
-                  or (command = "000101")) else
+                  or (command = "000101")
+									or (command = "010101")
+									or (command = "010110")) else
         '1';
 
 end Behavioral;

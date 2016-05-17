@@ -154,7 +154,7 @@ begin
   end process;
 
   instr_out <= instr_int;
-  we_out <= we;
+  we_out <= '0';
 	PM_count_out <= PM_count;
 
 

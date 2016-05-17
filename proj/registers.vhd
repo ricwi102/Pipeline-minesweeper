@@ -5,15 +5,17 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity Regs is
   port (
-    clk, rst 			 : in std_logic;
-    w_enable 			 : in std_logic; 
-    out1, out2 			 : out std_logic_vector (31 downto 0);
-    write_in 			 : in std_logic_vector (31 downto 0);      
-    read_address1, read_address2 : in std_logic_vector (4 downto 0);
-    write_address 		 : in std_logic_vector (4 downto 0);
-    make_op_in			 : in std_logic;
-    keyboard_in			 : in std_logic_vector (3 downto 0);
-    r10_test			 : out std_logic_vector(31 downto 0)	
+    clk, rst 			 	 							: in std_logic;
+    w_enable 			 	 							: in std_logic; 
+    out1, out2 			 							: out std_logic_vector (31 downto 0);
+    write_in 			 								: in std_logic_vector (31 downto 0);      
+    read_address1, read_address2 	: in std_logic_vector (4 downto 0);
+    write_address 		 						: in std_logic_vector (4 downto 0);
+    make_op_in			 							: in std_logic;
+    keyboard_in			 							: in std_logic_vector (3 downto 0);
+		x_pos_out											: out std_logic_vector(4 downto 0);
+		y_pos_out											: out std_logic_vector(3 downto 0);
+    r10_test			 								: out std_logic_vector(31 downto 0)	
     );
 end Regs;
 
@@ -25,7 +27,7 @@ architecture Behavioral of Regs is
   signal r4, r5, r6, r7 	: std_logic_vector(31 downto 0) := (others => '0');
   signal r8, r9, r10, r11 	: std_logic_vector(31 downto 0) := (others => '0');
   signal a2, b2, temp_a, temp_b : std_logic_vector(31 downto 0) := (others => '0');
-  signal reading_keyboard	: std_logic := '0';
+  
 
   
 begin  -- Behavioral
@@ -44,9 +46,9 @@ begin  -- Behavioral
         when "00101" => r5 <= write_in;
         when "00110" => r6 <= write_in;
         when "00111" => r7 <= write_in;
-	when "01000" => r8 <= write_in;
-        when "01001" => r9 <= write_in;
-       -- when "01010" => r10 <= write_in;  --Keyboard reserved
+				when "01000" => r8 <= write_in;			-- marker X_pos reserved
+        when "01001" => r9 <= write_in;     -- marker Y_pos reserved
+        --when "01010" => r10 <= write_in;    --Keyboard reserved
         when "01011" => r11 <= write_in;
         when others => null;
       end case;
@@ -67,7 +69,7 @@ temp_a <= r0 when (read_address1 = "00000") else
           r5 when (read_address1 = "00101") else
           r6 when (read_address1 = "00110") else
           r7 when (read_address1 = "00111") else
-	  r8 when (read_address1 = "01000") else
+	        r8 when (read_address1 = "01000") else
           r9 when (read_address1 = "01001") else
           r10 when (read_address1 = "01010") else
           r11 when (read_address1 = "01011") else
@@ -81,25 +83,28 @@ temp_a <= r0 when (read_address1 = "00000") else
            r5 when (read_address2 = "00101") else
            r6 when (read_address2 = "00110") else
            r7 when (read_address2 = "00111") else
-	   r8 when (read_address2 = "01000") else
+	   			 r8 when (read_address2 = "01000") else
            r9 when (read_address2 = "01001") else
            r10 when (read_address2 = "01010") else
            r11 when (read_address2 = "01011") else
            (others => '0');
 
- reading_keyboard <= '1' when (read_address1 = "01010" or read_address2 = "01010") else '0';
                
+	
+ x_pos_out <= r8(4 downto 0);
+ y_pos_out <= r9(3 downto 0);
  --Read keyboard data
- process(clk)
-   begin               
-   if rising_edge(clk) then
-     if make_op_in = '1' then
-	r10(3 downto 0) <= keyboard_in;
-     elsif reading_keyboard = '1' then
-	r10 <= (others => '0');
-     end if;
-   end if;
- end process;
+process(clk)
+begin               
+  if rising_edge(clk) then   
+		if (make_op_in = '1') then
+			r10(3 downto 0) <= keyboard_in;
+			r10(31 downto 4) <= (others => '0');  
+		elsif(write_address = "01010" and w_enable = '1') then
+			r10 <= write_in;		
+    end if;
+  end if;
+end process;
 
 
 end Behavioral;

@@ -9,7 +9,7 @@ entity keyboard_handler is
     rst                 : in std_logic;
     PS2KeyboardCLK      : in std_logic;
     PS2KeyboardData     : in std_logic;
-    MakeOpOut		: out std_logic;
+    MakeOpOut						: out std_logic;
     KeyPressedOut       : out std_logic_vector(3 downto 0)
     );
 end keyboard_handler;
@@ -18,23 +18,24 @@ end keyboard_handler;
 architecture behavioral of keyboard_handler is
   signal KeyPressed             : std_logic_vector(3 downto 0);
   
-  signal PS2Clk			: std_logic;			-- Synchronized PS2 clock
-  signal PS2Data		: std_logic;			-- Synchronized PS2 data
+  signal PS2Clk									: std_logic;			-- Synchronized PS2 clock
+  signal PS2Data								: std_logic;			-- Synchronized PS2 data
   signal PS2Clk_Q1, PS2Clk_Q2 	: std_logic;			-- PS2 clock one pulse flip flop
-  signal PS2Clk_op 		: std_logic;			-- PS2 clock one pulse 
+  signal PS2Clk_op 							: std_logic;			-- PS2 clock one pulse 
 	
-  signal PS2Data_sr 		: std_logic_vector(10 downto 0);-- PS2 data shift register
+  signal PS2Data_sr 						: std_logic_vector(10 downto 0);-- PS2 data shift register
 	
   signal PS2BitCounter	        : unsigned(3 downto 0);		-- PS2 bit counter
   signal BC11                   : std_logic;                    -- signal for ps2 state
-  signal make_Q			: std_logic;			-- make one pulselse flip flop
-  signal make_op		: std_logic;			-- make one pulse
+  signal make_plus							: std_logic;			-- make one pulselse flip flop
+  signal make_op								: std_logic;			-- make one pulse
   
   
   type state_type is (IDLE, MAKE, BREAK);			-- declare state types for PS2
-  signal PS2state : state_type;					-- PS2 state
+  signal PS2state 			: state_type;					-- PS2 state
+	signal PS2state_prev 	: state_type;
 
-  signal ScanCode		: std_logic_vector(7 downto 0);	-- scan code
+  signal ScanCode								: std_logic_vector(7 downto 0);	-- scan code
 
   
  begin
@@ -110,10 +111,11 @@ architecture behavioral of keyboard_handler is
       else
         PS2state <= PS2state;
       end if;
+			PS2state_prev <= PS2state;
     end if;
   end process ps2_state;
 
-  make_op <= '1' when (PS2state = MAKE) else '0';
+  make_op <= '1' when (PS2state_prev = MAKE and PS2state = IDLE) else '0';
   
   KeyPressed <= "0001" when ScanCode = x"1D" else  --W
                 "0010" when ScanCode = x"1C" else  --A

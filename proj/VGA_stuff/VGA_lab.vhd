@@ -15,6 +15,8 @@ use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 entity VGA_lab is
   port (clk	                	: in std_logic;                         -- system clock
 	 			rst                   : in std_logic;                         -- reset
+				x_pos									: in std_logic_vector(4 downto 0);
+				y_pos									: in std_logic_vector(3 downto 0);
 				IR3_in								: in std_logic_vector(31 downto 0);
 				Z3_in									: in std_logic_vector(31 downto 0);
 				D3_in									: in std_logic_vector(31 downto 0);
@@ -45,6 +47,8 @@ architecture Behavioral of VGA_lab is
   component VGA_MOTOR
     port ( clk			: in std_logic;                         -- system clock
            rst			: in std_logic;                         -- reset
+					 x_pos		: in std_logic_vector(4 downto 0);
+					 y_pos		: in std_logic_vector(3 downto 0);
            data			: in std_logic_vector(7 downto 0);      -- data
            addr			: out unsigned(10 downto 0);            -- address
            vgaRed		: out std_logic_vector(2 downto 0);     -- VGA red
@@ -64,7 +68,7 @@ begin
   U1 : PICT_MEM port map(clk=>clk, IR3_in => IR3_in, data_in=>Z3_in(7 downto 0), addr1=>unsigned(D3_in(10 downto 0)), data_out=>data_out2_s, addr2=>addr2_s);
 	
   -- VGA motor component connection
-  U2 : VGA_MOTOR port map(clk=>clk, rst=>rst, data=>data_out2_s, addr=>addr2_s, vgaRed=>vgaRed, vgaGreen=>vgaGreen, vgaBlue=>vgaBlue, Hsync=>Hsync, Vsync=>Vsync);
+  U2 : VGA_MOTOR port map(clk=>clk, rst=>rst, x_pos => x_pos, y_pos => y_pos, data=>data_out2_s, addr=>addr2_s, vgaRed=>vgaRed, vgaGreen=>vgaGreen, vgaBlue=>vgaBlue, Hsync=>Hsync, Vsync=>Vsync);
 
 end Behavioral;
 

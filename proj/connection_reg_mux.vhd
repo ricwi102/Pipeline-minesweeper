@@ -37,15 +37,17 @@ architecture Behavioral of connection_reg_mux is
 
 component Regs is
   port (
-				clk, rst 			 : in std_logic;
-				w_enable 			 : in std_logic; 
-				out1, out2 			 : out std_logic_vector (31 downto 0);
-				write_in 			 : in std_logic_vector (31 downto 0);      
-				read_address1, read_address2 : in std_logic_vector (4 downto 0);
-				write_address 		 : in std_logic_vector (4 downto 0);
-				make_op_in			 : in std_logic;
-				keyboard_in			 : in std_logic_vector(3 downto 0);
-				r10_test			 : out std_logic_vector(31 downto 0)
+				clk, rst 			 								: in std_logic;
+				w_enable 			 								: in std_logic; 
+				out1, out2 			 							: out std_logic_vector (31 downto 0);
+				write_in 			 								: in std_logic_vector (31 downto 0);      
+				read_address1, read_address2 	: in std_logic_vector (4 downto 0);
+				write_address 		 						: in std_logic_vector (4 downto 0);
+				make_op_in			 							: in std_logic;
+				keyboard_in			 							: in std_logic_vector(3 downto 0);
+				x_pos_out											: out std_logic_vector(4 downto 0);
+				y_pos_out											: out std_logic_vector(3 downto 0);
+				r10_test			 								: out std_logic_vector(31 downto 0)
 				);
 end component;
 
@@ -85,7 +87,7 @@ component data_minne is
   port (	clk 			: in std_logic;
        		adr 			: in std_logic_vector(8 downto 0); 	    	--Uses the D3 value for adresing.
 					IR3_in		: in std_logic_vector(31 downto 0);
-        	Z3_in 	: in std_logic_vector(31 downto 0);     	--Takes its value from "Z3" (B2 MUX)
+        	Z3_in 		: in std_logic_vector(31 downto 0);     	--Takes its value from "Z3" (B2 MUX)
         	data_out 	: out std_logic_vector(31 downto 0)		--Gives Z4 its value.
 	);
 end component;
@@ -103,6 +105,8 @@ end component;
 component VGA_LAB is
   port (clk	                	: in std_logic;                         -- system clock
 	 			rst                   : in std_logic;                         -- reset
+				x_pos									: in std_logic_vector(4 downto 0);
+				y_pos									: in std_logic_vector(3 downto 0);
 				IR3_in								: in std_logic_vector(31 downto 0);
 				Z3_in									: in std_logic_vector(31 downto 0);
 				D3_in									: in std_logic_vector(31 downto 0);
@@ -121,6 +125,9 @@ signal D3_int,D4_int	: std_logic_vector (31 downto 0) := (others => '0');
 signal Z4_int, Z3_int	: std_logic_vector (31 downto 0) := (others => '0');
 signal adr_internal 	: std_logic_vector (4 downto 0) := (others => '0');
 signal DM_adr 				: std_logic_vector (8 downto 0) := (others => '0');
+
+signal x_pos_int			: std_logic_vector(4 downto 0);
+signal y_pos_int			: std_logic_vector(3 downto 0);
 
 signal MakeOp_internal  : std_logic;
 signal KeyPressed_int	: std_logic_vector(3 downto 0);
@@ -151,7 +158,7 @@ end process;
 U0 : Regs port map(clk => clk, rst => rst, w_enable => we_internal, 
 		   out1 => A2 , out2 => B2 , write_in => write_data ,
 		   read_address1 => read_adr_int1, read_address2 => read_adr_int2, write_address => adr_internal, make_op_in => MakeOp_internal,
-		    keyboard_in => KeyPressed_int, r10_test => r10_test); 
+		    keyboard_in => KeyPressed_int, x_pos_out => x_pos_int, y_pos_out => y_pos_int, r10_test => r10_test); 
 
 U1 : ALU_mux port map(clk => clk, rst => rst,
 		      reg => B2_mux, IR1 => IR1_in , IR2 => IR2_in, output => ALU_mux_out);	
@@ -168,7 +175,7 @@ U4 : data_minne port map(clk => clk, adr => DM_adr , Z3_in => Z3_int, data_out =
 U5 : keyboard_handler port map(clk => clk, rst => rst, PS2KeyboardCLK => PS2KeyboardCLK, PS2KeyboardData => PS2KeyboardData, MakeOpOut => MakeOp_internal,
 				KeyPressedOut => KeyPressed_int);
 
-U6 : VGA_LAB port map(clk => clk, rst => rst, IR3_in => IR3_in, Z3_in => Z3_int, D3_in => D3_int, Hsync => Hsync, Vsync => Vsync, vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);
+U6 : VGA_LAB port map(clk => clk, rst => rst, x_pos => x_pos_int, y_pos => y_pos_int, IR3_in => IR3_in, Z3_in => Z3_int, D3_in => D3_int, Hsync => Hsync, Vsync => Vsync, vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);
 
 
 end Behavioral;

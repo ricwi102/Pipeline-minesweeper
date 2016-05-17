@@ -21,7 +21,7 @@ type ram_t is array (0 to 511) of
 -- Nollställ alla bitar på alla adresser
 signal ram : ram_t := (others => (others => '0'));
 
-signal Z4 : std_logic_vector(31 downto 0) := (others => '0');  -- Register
+signal Z4 		: std_logic_vector(31 downto 0) := (others => '0');  -- Register
 signal we     : std_logic := '0';
 
 begin
