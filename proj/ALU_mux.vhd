@@ -37,6 +37,7 @@ begin
   
   output <= IM2        when (command = "000010" or
                              command = "000011" or
+														 command = "000100" or
                              command = "000101" or
                              command = "000110" or
                              command = "001000" or

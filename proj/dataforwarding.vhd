@@ -21,7 +21,7 @@ end dataforwarding;
 
 architecture Behavioral of dataforwarding is
 
-  signal WB_ROM : std_logic_vector(30 downto 0) := b"0000_0011_1111_1111_1111_1111_1100_100";
+  signal WB_ROM : std_logic_vector(30 downto 0) := b"0000_0000_0001_1111_1111_1111_1001_100";
   signal IR3_IR2_first : std_logic := '0';
   signal IR4_IR2_first : std_logic := '0';
   signal IR3_IR2_second : std_logic := '0';
