@@ -71,7 +71,7 @@ architecture Behavioral of connection_IR_logic is
          IR1_out_js		: out std_logic_vector(31 downto 0);
          IR2_out_js    		: out std_logic_vector(31 downto 0);
 
-         PC_out         	: out std_logic_vector(31 downto 0);
+         PC_out         	: out std_logic_vector(9 downto 0);
          PM_in          	: in std_logic_vector(31 downto 0);
          z_flag_in      	: in std_logic
         );
@@ -80,7 +80,7 @@ architecture Behavioral of connection_IR_logic is
 
   component PM
   port(	clk, rst	: in std_logic;    	
-    	address		: in std_logic_vector(31 downto 0);
+    	address		: in std_logic_vector(9 downto 0);
 			rx				: in std_logic;    	
     	instr_out	: out std_logic_vector(31 downto 0)
 	);
@@ -98,7 +98,7 @@ architecture Behavioral of connection_IR_logic is
   signal IR2_plus  : std_logic_vector(31 downto 0) := (others => '0');	-- JS till IR  
 
   signal PM_internal : std_logic_vector(31 downto 0) := (others => '0');	
-  signal PC_internal : std_logic_vector(31 downto 0) := (others => '0');
+  signal PC_internal : std_logic_vector(9 downto 0) := (others => '0');
   
 begin  -- Behavioral
 

@@ -13,13 +13,13 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity program_loader is
     Port (clk,rst, rx 	: in  STD_LOGIC;
           instr_out			: out STD_LOGIC_VECTOR(31 downto 0);
-	  			PM_count_out  : out std_logic_vector(15 downto 0);
+	  			PM_count_out  : out std_logic_vector(9 downto 0);
 	  			we_out				: out std_logic
 	  			);          
 end program_loader;
 
 architecture Behavioral of program_loader is
-  signal PM_count 	: std_logic_vector(15 downto 0) := (others => '0');   
+  signal PM_count 	: std_logic_vector(9 downto 0) := (others => '0');   
   signal instr_int	: std_logic_vector(31 downto 0);
   signal we					: std_logic := '0';
   signal reading 		: std_logic := '0';	

@@ -10,7 +10,7 @@ entity jump_stall is
          IR1_out_js     : out std_logic_vector(31 downto 0);
          IR2_out_js     : out std_logic_vector(31 downto 0);
 
-         PC_out         : out std_logic_vector(31 downto 0);
+         PC_out         : out std_logic_vector(9 downto 0);
          PM_in          : in std_logic_vector(31 downto 0);
          z_flag_in      : in std_logic
          );
@@ -97,7 +97,7 @@ begin  -- Behoavioral
         end if;
       end if;
     end process;
-  PC_out <= PC;
+  PC_out <= PC(9 downto 0);
           
 
   extend(24 downto 0) <= IR1_internal(24 downto 0);
