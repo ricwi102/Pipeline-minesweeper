@@ -16,6 +16,8 @@ entity connection_master is
 	 			vgaBlue	        	  : out std_logic_vector(2 downto 1);     -- VGA blue
 
 				r10_test	    			: out std_logic_vector(31 downto 0);
+				rad3_out		: out std_logic_vector(5 downto 0);
+			
 				rx									: in std_logic
 	);
 end connection_master;
@@ -44,7 +46,9 @@ component connection_IR_logic
     D4_Z4_in 	: in std_logic_vector(31 downto 0);
 
     z_flag	: in std_logic;
-		rx			: in std_logic
+		rx			: in std_logic;
+
+		rad3_out		: out std_logic_vector(5 downto 0)
     );  
 end component;
 
@@ -92,8 +96,6 @@ signal ALU_A, ALU_B : std_logic_vector(31 downto 0) := (others => '0');
 signal A2, B2, D3, D4_Z4 : std_logic_vector(31 downto 0) := (others => '0'); 
 
 
-
-
 begin
 
 
@@ -103,7 +105,8 @@ U0 : connection_IR_logic port map(clk => clk, rst => rst,
 				  IR3_o => IR3_internal, IR4_o => IR4_internal,
 				  ALU_A_out => ALU_A, ALU_B_out => ALU_B,				  
 				  A2_in => A2, B2_in => B2, D3_in => D3, D4_Z4_in => D4_Z4,
-				  z_flag => z_flag_internal, rx => rx);	
+				  z_flag => z_flag_internal, rx => rx,
+					rad3_out => rad3_out);	
 
 
 U1 : connection_reg_mux port map(clk => clk, rst => rst,			

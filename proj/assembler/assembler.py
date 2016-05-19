@@ -67,7 +67,7 @@ def main(): #main start
 			const = True
 
 		store = False
-		if (temp in ('STORE', 'GSTORE')):
+		if (temp in ('STORE', 'GSTORE', 'CMP', 'BTST')):
 			store = True
 
 		instr_list[0] = instr_num * 4

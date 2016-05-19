@@ -22,8 +22,10 @@ entity connection_IR_logic is
     D3_in 			: in std_logic_vector(31 downto 0);
     D4_Z4_in 		: in std_logic_vector(31 downto 0);
 
-    z_flag			: in std_logic;
+    z_flag			: in std_logic;	
 
+		rad3_out 		: out std_logic_vector(5 downto 0);
+	
 		rx					: in std_logic
     );
   
@@ -55,7 +57,7 @@ architecture Behavioral of connection_IR_logic is
 	 IR1_out        : out std_logic_vector(31 downto 0);   --Output
 	 IR2_out        : out std_logic_vector(31 downto 0);   --Output
 	 IR3_out        : out std_logic_vector(31 downto 0);   --Output
-         IR4_out        : out std_logic_vector(31 downto 0);
+   IR4_out        : out std_logic_vector(31 downto 0);
 
 	 IR1_in		: in std_logic_vector(31 downto 0);
 	 IR2_in		: in std_logic_vector(31 downto 0)
@@ -73,16 +75,18 @@ architecture Behavioral of connection_IR_logic is
 
          PC_out         	: out std_logic_vector(9 downto 0);
          PM_in          	: in std_logic_vector(31 downto 0);
-         z_flag_in      	: in std_logic
+         z_flag_in      	: in std_logic;
+				 running_pl_in		: in std_logic
         );
   end component;
 
 
   component PM
   port(	clk, rst	: in std_logic;    	
-    	address		: in std_logic_vector(9 downto 0);
-			rx				: in std_logic;    	
-    	instr_out	: out std_logic_vector(31 downto 0)
+    	address			: in std_logic_vector(9 downto 0);
+			rx					: in std_logic;    	
+    	instr_out		: out std_logic_vector(31 downto 0);
+			running_out : out std_logic		
 	);
   end component;
 
@@ -99,6 +103,9 @@ architecture Behavioral of connection_IR_logic is
 
   signal PM_internal : std_logic_vector(31 downto 0) := (others => '0');	
   signal PC_internal : std_logic_vector(9 downto 0) := (others => '0');
+
+	signal running_pl : std_logic;
+
   
 begin  -- Behavioral
 
@@ -106,6 +113,8 @@ begin  -- Behavioral
   IR2_o <= IR2_value;
   IR3_o <= IR3_value;
   IR4_o <= IR4_value;
+
+	rad3_out <= PM_internal(31 downto 26);
  
 
 --IR portarna.
@@ -123,9 +132,9 @@ begin  -- Behavioral
 															PM_in => PM_internal, IR1_in_js => IR1_value, IR2_in_js => IR2_value, 
 															IR1_out_js => IR1_plus, IR2_out_js => IR2_plus,
 															PC_out => PC_internal,
-															z_flag_in => z_flag); 
+															z_flag_in => z_flag, running_pl_in => running_pl); 
 
- port3 : PM port map(clk => clk, rst => rst, address => PC_internal, instr_out => PM_internal, rx => rx);
+ port3 : PM port map(clk => clk, rst => rst, address => PC_internal, instr_out => PM_internal, rx => rx, running_out => running_pl);
 
 
 

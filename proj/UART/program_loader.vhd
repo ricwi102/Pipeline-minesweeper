@@ -13,21 +13,24 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity program_loader is
     Port (clk,rst, rx 	: in  STD_LOGIC;
           instr_out			: out STD_LOGIC_VECTOR(31 downto 0);
-	  			PM_count_out  : out std_logic_vector(15 downto 0);
-	  			we_out				: out std_logic
+	  			PM_count_out  : out std_logic_vector(9 downto 0);
+	  			we_out				: out std_logic;
+					running_out		: out std_logic
 	  			);          
 end program_loader;
 
 architecture Behavioral of program_loader is
-  signal PM_count 	: std_logic_vector(15 downto 0) := (others => '0');   
+  signal PM_count 	: std_logic_vector(9 downto 0) := (others => '0');   
   signal instr_int	: std_logic_vector(31 downto 0);
   signal we					: std_logic := '0';
   signal reading 		: std_logic := '0';	
+	signal running 		: std_logic := '0';	
 	signal rx1, rx2		: std_logic;
 	signal sp, lp			: std_logic;
 	signal pulsecount : std_logic_vector(9 downto 0);
 	signal sreg				: std_logic_vector(9 downto 0);
 	signal pos				: std_logic_vector(1 downto 0);
+	signal idle_count	: std_logic_vector(11 downto 0) := (others => '0');
 
 
   signal shiftcount : std_logic_vector(3 downto 0) := (others => '0');
@@ -140,21 +143,43 @@ begin
   instr_shift : process(clk) begin
     if rising_edge(clk) then
       if (rst = '1') then
- 	 			PM_count <= (others => '0');
-	 			we <= '0';
-      else
-				if(pos = "11" and lp = '1') then
-          we <= '1';
-        elsif(we = '1') then
-	   			we <= '0';
+ 	 			PM_count <= (others => '0');	 		
+      else			
+       	if(we = '1') then	   			
           PM_count <= PM_count + 1;
         end if;  
       end if;
     end if;
   end process;
+	we <= '1' when (pos = "11" and lp = '1') else '0';
 
+
+	running_count : process(clk) begin
+		if rising_edge(clk)	then
+			if (rst = '1') then
+				idle_count <= (others => '0');
+			else			
+				if (reading = '1') then
+					idle_count <= (others => '0');
+					running <= '1';
+				elsif (idle_count = 4000) then
+					running <= '0';
+					idle_count <= (others => '0');
+				else
+					idle_count <= idle_count + 1;
+				end if;
+			end if;
+		end if;
+	end process;
+
+
+
+
+
+
+	running_out <= running;
   instr_out <= instr_int;
-  we_out <= '0';
+  we_out <= we;
 	PM_count_out <= PM_count;
 
 
