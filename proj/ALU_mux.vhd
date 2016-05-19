@@ -47,8 +47,8 @@ begin
                              command = "001111" or
                              command = "010010" or
                              command = "010100" or
-                             command = "010110" or
-                             command = "011000") else
+                             command = "010101" or
+                             command = "010111") else
             r_internal;
   
 

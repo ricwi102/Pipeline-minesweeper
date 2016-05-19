@@ -33,7 +33,7 @@ def main(): #main start
 							'SUB' 	: 8,
 							'MULT' 	: 11,
 							'AND' 	: 13,
-							'OR' 	: 15,
+							'OR' 		: 15,
 							'LSR' 	: 17,
 							'LSL' 	: 19,
 							'CMP' 	: 21,
@@ -45,7 +45,7 @@ def main(): #main start
 							'BNE' 	: 29,
 							'BNER' 	: 30}
 	
-	contains_const = (2, 3, 4, 5, 6, 8, 9, 11, 13, 15, 22, 24, 25, 26, 27, 28, 29, 30, 31)
+	contains_const = (2, 3, 4, 5, 6, 8, 9, 11, 13, 15, 21, 23, 25, 26, 27, 28, 29, 30, 31)
 	
 
 	
@@ -56,7 +56,9 @@ def main(): #main start
 		instr_list = [0, 0, 0, 0]
 
 		if (temp in ('ADD', 'MULT', 'AND', 'OR')):
-			instr_num = determine_instr(s, commands[temp])
+			instr_num = determine_instr(s, commands[temp], 3)
+		elif (temp in ('CMP', 'BTST')):
+			instr_num = determine_instr(s, commands[temp], 2)
 		elif (temp == "SUB"):
 			instr_num = determine_instr_sub(s, commands[temp])
 		else:
@@ -87,7 +89,7 @@ def main(): #main start
 
 
 
-	
+	output_file.write(bytearray([255, 255, 255, 254]))
 	while(True):
 		s = f.readline()
 		if (s == ''):
@@ -102,14 +104,16 @@ def main(): #main start
 					s[i+1] = s[i+1][:-1]
 		
 			write_line(s)
+	
+	output_file.write(bytearray([255, 255, 255, 255]))
 		
 			
 		
 
 #main end
 
-def determine_instr(args_s, base_value):
-	if (args_s[3][0] == 'R'):
+def determine_instr(args_s, base_value, const_pos):
+	if (args_s[const_pos][0] == 'R'):
 		return base_value + 1
 	return base_value
 
