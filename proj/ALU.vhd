@@ -34,9 +34,9 @@ begin
         when "000101" => flag_output <= ('0' & input1) + ('0' & input2);
         when "000110" => flag_output <= ('0' & input1) + ('0' & input2);
         when "000111" => flag_output <= ('0' & input1) + ('0' & input2);
-        when "001000" => flag_output <= ('0' & input1) - ('0' & input2);
+        when "001000" => flag_output <= ('0' & input2) - ('0' & input1);
         when "001001" => flag_output <= ('0' & input1) - ('0' & input2);
-        when "001010" => flag_output <= ('0' & input1) - ('0' & input2);
+        when "001010" => flag_output <= ('0' & input2) - ('0' & input1);
         when "001011" => flag_output <= ('0' & (input1(15 downto 0)) * (input2(15 downto 0)));
         when "001100" => flag_output <= ('0' & (input1(15 downto 0)) * (input2(15 downto 0)));
         when "001101" => flag_output <= ('0' & input1) and ('0' & input2);
@@ -47,8 +47,8 @@ begin
         when "010010" => flag_output <= (others => '0');  --LSR2
         when "010011" => flag_output <= (others => '0');  --LSL
         when "010100" => flag_output <= (others => '0');  --LSL2
-        when "010101" => flag_output <= ('0' & input1) - ('0' & input2);
-        when "010110" => flag_output <= ('0' & input1) - ('0' & input2);
+        when "010101" => flag_output <= ('0' & input2) - ('0' & input1);
+        when "010110" => flag_output <= ('0' & input2) - ('0' & input1);
         when "010111" => flag_output(32 downto 1) <= (others => '0');
                          flag_output(0) <= input1(conv_integer(input2));
         when "011000" => flag_output(32 downto 1) <= (others => '0');

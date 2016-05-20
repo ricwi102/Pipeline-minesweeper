@@ -1,72 +1,75 @@
-NOP; ---------------------------- MOVEMENT STARTS HERE -------------------------
-NOP;
-NOP;
-ADD R2, R8, R9; 							-- ADD X + Y TO REGISTER 3
+MOVE R10, 0;
 CMP R10, 4; 									-- CHECK D
-BNE 17; 											-- IF NOT, CHECK A
+BEQ 20; 											-- IF NOT, CHECK A
 NOP;
+CMP R10, 2; 									-- CHECK A
+BEQ 28; 											-- IF NOT, CHECK W
+NOP;
+CMP R10, 1; 									-- CHECK W
+BEQ 36; 											-- IF NOT, CHECK S
+NOP;
+CMP R10, 3; 									-- CHECK S
+BEQ 44; 											-- IF NOT, CHECK Q
+NOP;
+CMP R10, 5; 									-- CHECK QUESTIONMARK
+BEQ 51; 											-- IF NOT, CHECK E 
+NOP;
+CMP R10, 6; 									-- CHECK E
+BEQ 57; 											-- IF NOT, CHECK R ( GOES TO TOP ATM)
+NOP;
+JMP 1;
+
+
 CMP R8, 19; 									-- CHECK IF LAST X-POS
-BEQ 13; 											-- IF LAST GO BACK TO FIRST X-POS
+BEQR 4; 											-- IF LAST GO BACK TO FIRST X-POS
 ADD R8, R8, 1;								-- OTHERWISE MOVE RIGHT
-MOVE R10, 0;									-- RESET R10
 JMP 0;												-- JUMP TO TOP
 NOP;
 MOVE R8, 0;										-- MOVE BACK TO FIRST X-POS
-MOVE R10, 0;									-- RESET R10
 JMP 0;												-- JUMP TO TOP
 NOP;
-CMP R10, 2; 									-- CHECK A
-BNE 30; 											-- IF NOT, CHECK W
-NOP;
+
+
 CMP R8, 0; 										-- CHECK IF FIRST X-POS
-BEQ 26; 											-- IF FIRST GO TO LAST X-POS
+BEQR 4; 											-- IF FIRST GO TO LAST X-POS
 SUB R8, R8, 1; 								-- OTHERWISE MOVE LEFT
-MOVE R10, 0;									-- RESET R10
 JMP 0;												-- JUMP TO TOP
 NOP;
 MOVE R8, 19; 									-- MOVE MARKER TO LAST X-POS
-MOVE R10, 0;									-- RESET R10
 JMP 0;												-- JUMP TO TOP
 NOP;
-CMP R10, 1; 									-- CHECK W
-BNE 41; 											-- IF NOT, CHECK S
-NOP;
+
+
 CMP R9, 0; 										-- CHECK IF FIRST Y-POS
-BEQ 39; 											-- IF FIRST GO TO LAST Y-POS
+BEQR 4; 											-- IF FIRST GO TO LAST Y-POS
 SUB R9, R9, 1; 								-- OTHERWISE MOVE UP
-MOVE R10, 0;									-- RESET R10
 JMP 0;												-- JUMP TO TOP
 NOP;
 MOVE R9, 14; 									-- MOVE MARKER TO LAST Y-POS
-MOVE R10, 0;									-- RESET R10
 JMP 0;												-- JUMP TO TOP
 NOP;
-CMP R10, 3; 									-- CHECK S
-BNE 56; 											-- IF NOT, CHECK Q
-NOP;
+
+
 CMP R9, 14; 									-- CHECK IF LAST Y-POS
-BEQ 52; 											-- IF LAST GO TO FIRST Y-POS
+BEQR 4; 											-- IF LAST GO TO FIRST Y-POS
 ADD R9, R9, 1; 								-- OTHERWISE MOVE DOWN
-MOVE R10, 0;									-- RESET R10
 JMP 0;												-- JUMP TO TOP
 NOP;
 MOVE R9, 0; 									-- MOVE MARKER TO FIRST Y-POS
-MOVE R10, 0;									-- RESET R10
 JMP 0;												-- JUMP TO TOP
-NOP;  ------------------ MOVEMENT ENDS / ACTIONS START HERE --------------------------
-CMP R10, 5; 									-- CHECK QUESTIONMARK
-BNE 64; 											-- IF NOT, CHECK E 
-NOP;
+
+;------------------ MOVEMENT ENDS / ACTIONS START HERE --------------------------
+MULT R1, R9, 20; 							-- pos for flag
+ADD R2, R8, R1; 							-- ADD X + Y TO REGISTER 3
 MOVE R1, 10;									-- QM TO REGISTER?
-GSTORE R1, R3, 0; 						-- GSTORE IT
-MOVE R10, 0;									-- RESET R10
+GSTORE R2, R1, 0; 						-- GSTORE IT
 JMP 0;												-- JUMP TO TOP
 NOP;
-CMP R10, 5; 									-- CHECK E
-BNE 0; 												-- IF NOT, CHECK R ( GOES TO TOP ATM)
-NOP;
+
+
+MULT R1, R9, 20; 							-- pos for flag
+ADD R2, R8, R1; 							-- ADD X + Y TO REGISTER 3
 MOVE R1, 9;										-- FLAG TO REGISTER?
-GSTORE R1, R3, 0; 						-- GSTORE IT 
-MOVE R10, 0;									-- RESET R10
+GSTORE R2, R1, 0; 						-- GSTORE IT 
 JMP 0;												-- JUMP TO TOP
 NOP;

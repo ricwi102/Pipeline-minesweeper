@@ -16,7 +16,7 @@ EX: LOAD r1, # -> r1 = (noll-reg + #)
 000001:	HALT									-> halt
 000010: MOVE reg, #						-> move # to reg
 000011: LOAD reg1, reg2, #		-> load reg1 with DM(reg2 + #)
-000100: GSTORE reg1, reg2, # 	-> store (reg2) in GM(reg1 + #+)
+000100: GSTORE reg1, reg2, # 	-> store (reg2) in GM(reg1 + #)
 000101: STORE reg1, reg2, #		-> store (reg2) in DM(reg1 + #)
 000110: ADD reg1, reg2, # 		-> move (reg2 + #) to reg1   
 000111: ADD reg1, reg2, reg3	-> move (reg2 + reg3) to reg1
