@@ -1,0 +1,75 @@
+MOVE R10, 0;
+CMP R10, 4; 									-- CHECK D
+BEQ INSTR_D; 											-- IF NOT, CHECK A
+NOP;
+CMP R10, 2; 									-- CHECK A
+BEQ INSTR_A; 											-- IF NOT, CHECK W
+NOP;
+CMP R10, 1; 									-- CHECK W
+BEQ INSTR_W; 											-- IF NOT, CHECK S
+NOP;
+CMP R10, 3; 									-- CHECK S
+BEQ INSTR_S; 											-- IF NOT, CHECK Q
+NOP;
+CMP R10, 5; 									-- CHECK QUESTIONMARK
+BEQ INSTR_Q; 											-- IF NOT, CHECK E 
+NOP;
+CMP R10, 6; 									-- CHECK E
+BEQ INSTR_E; 											-- IF NOT, CHECK R ( GOES TO TOP ATM)
+NOP;
+JMP 1;
+
+INSTR_D:
+CMP R8, 19; 									-- CHECK IF LAST X-POS
+BEQR 4; 											-- IF LAST GO BACK TO FIRST X-POS
+ADD R8, R8, 1;								-- OTHERWISE MOVE RIGHT
+JMP 0;												-- JUMP TO TOP
+NOP;
+MOVE R8, 0;										-- MOVE BACK TO FIRST X-POS
+JMP 0;												-- JUMP TO TOP
+NOP;
+
+INSTR_A:
+CMP R8, 0; 										-- CHECK IF FIRST X-POS
+BEQR 4; 											-- IF FIRST GO TO LAST X-POS
+SUB R8, R8, 1; 								-- OTHERWISE MOVE LEFT
+JMP 0;												-- JUMP TO TOP
+NOP;
+MOVE R8, 19; 									-- MOVE MARKER TO LAST X-POS
+JMP 0;												-- JUMP TO TOP
+NOP;
+
+INSTR_W:
+CMP R9, 0; 										-- CHECK IF FIRST Y-POS
+BEQR 4; 											-- IF FIRST GO TO LAST Y-POS
+SUB R9, R9, 1; 								-- OTHERWISE MOVE UP
+JMP 0;												-- JUMP TO TOP
+NOP;
+MOVE R9, 14; 									-- MOVE MARKER TO LAST Y-POS
+JMP 0;												-- JUMP TO TOP
+NOP;
+
+INSTR_S:
+CMP R9, 14; 									-- CHECK IF LAST Y-POS
+BEQR 4; 											-- IF LAST GO TO FIRST Y-POS
+ADD R9, R9, 1; 								-- OTHERWISE MOVE DOWN
+JMP 0;												-- JUMP TO TOP
+NOP;
+MOVE R9, 0; 									-- MOVE MARKER TO FIRST Y-POS
+JMP 0;												-- JUMP TO TOP
+
+INSTR_Q:;------------------ MOVEMENT ENDS / ACTIONS START HERE --------------------------
+MULT R1, R9, 20; 							-- pos for flag
+ADD R2, R8, R1; 							-- ADD X + Y TO REGISTER 3
+MOVE R1, 10;									-- QM TO REGISTER?
+GSTORE R2, R1, 0; 						-- GSTORE IT
+JMP 0;												-- JUMP TO TOP
+NOP;
+
+INSTR_E:
+MULT R1, R9, 20; 							-- pos for flag
+ADD R2, R8, R1; 							-- ADD X + Y TO REGISTER 3
+MOVE R1, 9;										-- FLAG TO REGISTER?
+GSTORE R2, R1, 0; 						-- GSTORE IT 
+JMP 0;												-- JUMP TO TOP
+NOP;
