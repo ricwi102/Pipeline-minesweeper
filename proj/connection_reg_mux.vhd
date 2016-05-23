@@ -18,6 +18,7 @@ entity connection_reg_mux is
 	 D4_Z4_data						: out std_logic_vector(31 downto 0);	--Either D4 or Z4, the mux chooses.
 
 	 z_flag 							: out std_logic;
+	 n_flag			 					: out std_logic;
 					
 	 PS2KeyboardCLK      	: in std_logic;
    PS2KeyboardData     	: in std_logic;
@@ -79,6 +80,7 @@ component ALU is
 		  	input2 				: in std_logic_vector (31 downto 0);
 		  	op_ctrl 			: in std_logic_vector (5 downto 0);
 				z_flag_out 		: out std_logic;
+				n_flag_out 		: out std_logic;
 		  	output 				: out std_logic_vector (31 downto 0)  	        -- Gives D3 its value.
 	);
 end component;
@@ -168,7 +170,7 @@ U1 : ALU_mux port map(clk => clk, rst => rst,
 U2 : register_mux port map(D4 => D4_int, Z4 => Z4_int, IR4 => IR4_in,
 			   we => we_internal, data => write_data , adr => adr_internal);
 
-U3 : ALU port map(clk => clk, input1 => ALU_mux_out, input2 => A2_mux, op_ctrl => command, z_flag_out => z_flag , output => D3_int); 
+U3 : ALU port map(clk => clk, input1 => ALU_mux_out, input2 => A2_mux, op_ctrl => command, z_flag_out => z_flag, n_flag_out => n_flag , output => D3_int); 
 
 U4 : data_minne port map(clk => clk, adr => DM_adr , Z3_in => Z3_int, data_out => Z4_int, IR3_in => IR3_in);
 

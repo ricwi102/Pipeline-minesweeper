@@ -8,7 +8,7 @@ import math
 from sys import argv
 
 
-jump_instr = ('JMP', 'JMPR', 'BEQ', 'BEQR', 'BNE', 'BNER')	
+jump_instr = ('JMP', 'JMPR', 'BEQ', 'BEQR', 'BNE', 'BNER', 'BGR', 'BGRR', 'BNG', 'BNGR')	
 two_arg_instr = ('MOVE', 'CMP', 'BTST')
 
 def main(): #main start
@@ -43,9 +43,13 @@ def main(): #main start
 							'BEQ' 	: 27,
 							'BEQR' 	: 28,
 							'BNE' 	: 29,
-							'BNER' 	: 30}
+							'BNER' 	: 30,
+							'BGR' 	: 31,
+							'BGRR' 	: 32,
+							'BNG' 	: 33,
+							'BNGR' 	: 34}
 	
-	contains_const = (2, 3, 4, 5, 6, 8, 9, 11, 13, 15, 21, 23, 25, 26, 27, 28, 29, 30, 31)
+	contains_const = (2, 3, 4, 5, 6, 8, 9, 11, 13, 15, 21, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34)
 	variables = dict()
 
 	

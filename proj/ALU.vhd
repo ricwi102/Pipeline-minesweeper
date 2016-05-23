@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use IEEE.STD_LOGIC_SIGNED.ALL;
 
 entity ALU is
   port (
@@ -10,15 +10,16 @@ entity ALU is
     input2 		: in std_logic_vector (31 downto 0);
     op_ctrl 		: in std_logic_vector (5 downto 0);
     z_flag_out 		: out std_logic;
+		n_flag_out		: out std_logic;
     output 		: out std_logic_vector (31 downto 0)  
     );
 end ALU;
 
 architecture Behavioral of ALU is 
 
-signal o_flag : std_logic := '0';
+--signal o_flag : std_logic := '0';
 signal c_flag : std_logic := '0';
-signal f_flag : std_logic := '0';
+--signal f_flag : std_logic := '0';
 signal z_flag : std_logic := '0';
 signal n_flag : std_logic := '0';
 signal flag_output: std_logic_vector (32 downto 0) := (others => '0');
@@ -50,9 +51,9 @@ begin
         when "010101" => flag_output <= ('0' & input2) - ('0' & input1);
         when "010110" => flag_output <= ('0' & input2) - ('0' & input1);
         when "010111" => flag_output(32 downto 1) <= (others => '0');
-                         flag_output(0) <= input1(conv_integer(input2));
+                         flag_output(0) <= input2(conv_integer(input1));
         when "011000" => flag_output(32 downto 1) <= (others => '0');
-                         flag_output(0) <= input1(conv_integer(input2));
+                         flag_output(0) <= input2(conv_integer(input1));
         when others => flag_output <= flag_output;
       end case;
     end if;
@@ -61,8 +62,9 @@ begin
   output <= flag_output(31 downto 0);
   c_flag <= flag_output(32);
   z_flag <= '1' when (conv_integer(flag_output(31 downto 0)) = 0) else '0';
-  n_flag <= '1' when (conv_integer(flag_output(31 downto 0)) < 0) else '0';
+  n_flag <= '1' when (flag_output(31) = '1') else '0';
 	
 	z_flag_out <= z_flag;
+	n_flag_out <= n_flag; 
 
 end Behavioral;

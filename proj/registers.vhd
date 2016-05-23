@@ -26,6 +26,7 @@ architecture Behavioral of Regs is
   signal r0, r1, r2, r3  	: std_logic_vector(31 downto 0) := (others => '0');  -- Register
   signal r4, r5, r6, r7 	: std_logic_vector(31 downto 0) := (others => '0');
   signal r8, r9, r10, r11 	: std_logic_vector(31 downto 0) := (others => '0');
+	signal r12, r13, r14, r15 	: std_logic_vector(31 downto 0) := (others => '0');
   signal a2, b2, temp_a, temp_b : std_logic_vector(31 downto 0) := (others => '0');
   
 
@@ -50,6 +51,10 @@ begin  -- Behavioral
         when "01001" => r9 <= write_in;     -- marker Y_pos reserved
         --when "01010" => r10 <= write_in;    --Keyboard reserved
         when "01011" => r11 <= write_in;
+				when "01100" => r12 <= write_in;
+        when "01101" => r13 <= write_in;
+				when "01110" => r14 <= write_in;			-- marker X_pos reserved
+        when "01111" => r15 <= write_in;
         when others => null;
       end case;
     end if;
@@ -59,7 +64,7 @@ begin  -- Behavioral
  out1 <= a2;
  out2 <= b2;
 
- r10_test <= r10;
+ r10_test <= r2;
 
 temp_a <= r0 when (read_address1 = "00000") else
           r1 when (read_address1 = "00001") else
@@ -73,6 +78,10 @@ temp_a <= r0 when (read_address1 = "00000") else
           r9 when (read_address1 = "01001") else
           r10 when (read_address1 = "01010") else
           r11 when (read_address1 = "01011") else
+					r12 when (read_address1 = "01100") else
+          r13 when (read_address1 = "01101") else
+          r14 when (read_address1 = "01110") else
+          r15 when (read_address1 = "01111") else
           (others => '0');
            
  temp_b <= r0 when (read_address2 = "00000") else
@@ -87,6 +96,10 @@ temp_a <= r0 when (read_address1 = "00000") else
            r9 when (read_address2 = "01001") else
            r10 when (read_address2 = "01010") else
            r11 when (read_address2 = "01011") else
+					 r12 when (read_address2 = "01100") else
+           r13 when (read_address2 = "01101") else
+           r14 when (read_address2 = "01110") else
+           r15 when (read_address2 = "01111") else
            (others => '0');
 
                

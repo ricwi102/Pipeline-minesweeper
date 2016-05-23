@@ -40,12 +40,17 @@ EX: LOAD r1, # -> r1 = (noll-reg + #)
 011001: JMP  #		        		-> jump to #  
 011010: JMPR #	         			-> jump to (PC + #)
 011011:	BEQ  #								-> if (z = 1) jump to #
-011100: BEQR #								-> if (z = 1) jump to (PC + # + reg)
-011101:	BNE  #		        		-> if (z = 0) jump to (reg + #)
-011110: BNER #								-> if (z = 0) jump to (PC + # + reg)
-011111: 
-
-
-
+011100: BEQR #								-> if (z = 1) jump to (PC + #)
+011101:	BNE  #		        		-> if (z = 0) jump to #
+011110: BNER #								-> if (z = 0) jump to (PC + #)
+011111: BGR  #								-> if (n = 1) jump to #
+100000:	BGRR #								-> if (n = 1) jump to (PC + #)
+100001:	BNG  #								-> if (n = 0) jump to #
+100010:	BNGR #								-> if (n = 0) jump to (PC + #)
+100011:
+100100:
+100101:
+100110:
+100111:
 
 

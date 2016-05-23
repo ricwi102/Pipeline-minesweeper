@@ -17,11 +17,7 @@ end PM;
 architecture Behavioral of PM is
 
 type prog_mem is array (0 to 1023) of std_logic_vector(31 downto 0);
-signal prog_mem_c : prog_mem := (b"000010_00000_00000_00000_00000000000",
-																	b"000000_00000_00000_00000_00000000000",
-																	b"000000_00000_00000_00000_00000000000",
-																	b"001101_00000_00000_00000_00000000000",
-																	others => (others => '0'));
+signal prog_mem_c : prog_mem := (others => (others => '0'));
 
 
 component program_loader

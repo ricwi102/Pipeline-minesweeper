@@ -13,6 +13,7 @@ entity jump_stall is
          PC_out         : out std_logic_vector(9 downto 0);
          PM_in          : in std_logic_vector(31 downto 0);
          z_flag_in      : in std_logic;
+				 n_flag_in      : in std_logic;
 
 				 running_pl_in	: in std_logic
          );
@@ -25,7 +26,7 @@ architecture Behavioral of jump_stall is
   signal PC1						: std_logic_vector(31 downto 0) := (others => '0');
   signal PC2						: std_logic_vector(31 downto 0) := (others => '0');
   
-  signal stall_rom     	: std_logic_vector(30 downto 0) := b"0001_0111_1111_1111_1111_1111_1000_000";
+  signal stall_rom     	: std_logic_vector(34 downto 0) := b"000_0000_0001_1111_1111_1111_1111_1111_1000";	
   signal IR1_internal   : std_logic_vector(31 downto 0) := (others => '0');
   signal IR2_internal   : std_logic_vector(31 downto 0) := (others => '0');
   alias command_ir1			: std_logic_vector(5 downto 0) is IR1_internal(31 downto 26);
@@ -37,6 +38,7 @@ architecture Behavioral of jump_stall is
   alias send_stall 	  	: std_logic is mux_signal(1);
   
   signal j, z_flag_j 		: std_logic := '0';
+	signal n_flag_j 			: std_logic := '0';
   signal dir_jump				: std_logic := '0';
   alias take_jump 			: std_logic is mux_signal(0);
 		
@@ -64,15 +66,19 @@ begin  -- Behoavioral
   -- JUMP LOGIC --
 
   dir_jump <= '1' when (command_ir1 = "011001" or command_ir1 = "011011" or 
-			command_ir1 = "011101") else '0';
+			command_ir1 = "011101" or command_ir1 = "011111" or command_ir1 = "100001") else '0';
 
   j <= '1' when (command_ir2 = "011001" or command_ir2 = "011010") else '0';
   
   z_flag_j <= '1' when ((z_flag_in = '1' and conv_integer(command_ir2) >= 27 and conv_integer(command_ir2) <= 28) 
 												or (z_flag_in = '0' and conv_integer(command_ir2) >= 29 and conv_integer(command_ir2) <= 30))
               else '0';
+
+	n_flag_j <= '1' when ((n_flag_in = '1' and conv_integer(command_ir2) >= 31 and conv_integer(command_ir2) <= 32) 
+												or (n_flag_in = '0' and conv_integer(command_ir2) >= 33 and conv_integer(command_ir2) <= 34))
+              else '0';
   
-  take_jump <= '1' when (j = '1' or z_flag_j = '1') else '0';
+  take_jump <= '1' when (j = '1' or z_flag_j = '1' or n_flag_j = '1') else '0';
 
 	process(clk) begin
 		if rising_edge(clk) then

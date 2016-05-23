@@ -22,7 +22,8 @@ entity connection_IR_logic is
     D3_in 			: in std_logic_vector(31 downto 0);
     D4_Z4_in 		: in std_logic_vector(31 downto 0);
 
-    z_flag			: in std_logic;	
+    z_flag			: in std_logic;
+		n_flag      : in std_logic;
 
 		rad3_out 		: out std_logic_vector(5 downto 0);
 	
@@ -76,6 +77,7 @@ architecture Behavioral of connection_IR_logic is
          PC_out         	: out std_logic_vector(9 downto 0);
          PM_in          	: in std_logic_vector(31 downto 0);
          z_flag_in      	: in std_logic;
+				 n_flag_in      	: in std_logic;
 				 running_pl_in		: in std_logic
         );
   end component;
@@ -132,7 +134,7 @@ begin  -- Behavioral
 															PM_in => PM_internal, IR1_in_js => IR1_value, IR2_in_js => IR2_value, 
 															IR1_out_js => IR1_plus, IR2_out_js => IR2_plus,
 															PC_out => PC_internal,
-															z_flag_in => z_flag, running_pl_in => running_pl); 
+															z_flag_in => z_flag, n_flag_in => n_flag, running_pl_in => running_pl); 
 
  port3 : PM port map(clk => clk, rst => rst, address => PC_internal, instr_out => PM_internal, rx => rx, running_out => running_pl);
 
