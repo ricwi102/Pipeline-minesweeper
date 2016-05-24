@@ -15,14 +15,6 @@ Net "PS2KeyboardClk" LOC = L12 | IOSTANDARD = LVCMOS33 | PULLUP; #Bank = 1, pin 
 Net "PS2KeyboardData" LOC = J13 | IOSTANDARD = LVCMOS33 | PULLUP; #Bank = 1, pin name = IO_L39P_M1A3, Sch name = PIC-SDI1
 
 
-## Leds
-Net "r10_test<2>" LOC = U16 | IOSTANDARD = LVCMOS33; #Bank = 2, pin name = IO_L2P_CMPCLK, Sch name = LD0
-Net "r10_test<3>" LOC = V16 |  IOSTANDARD = LVCMOS33; #Bank = 2, pin name = IO_L2N_CMPMOSI, Sch name = LD1
-Net "r10_test<4>" LOC = U15 |  IOSTANDARD = LVCMOS33; #Bank = 2, pin name = IO_L5P, Sch name = LD2
-Net "r10_test<5>" LOC = V15 |  IOSTANDARD = LVCMOS33; #Bank = 2, pin name = IO_L5N, Sch name = LD3
-Net "r10_test<6>" LOC = M11 |  IOSTANDARD = LVCMOS33; #Bank = 2, pin name = IO_L15P, Sch name = LD4
-Net "r10_test<7>" LOC = N11 |  IOSTANDARD = LVCMOS33; #Bank = 2, pin name = IO_L15N, Sch name = LD5
-
 ## VGA Connector
 NET "vgaRed<0>" LOC = U7 | IOSTANDARD = LVCMOS33; # Bank = 2, pin name = IO_L43P, Sch name = RED0
 NET "vgaRed<1>" LOC = V7 | IOSTANDARD = LVCMOS33; # Bank = 2, pin name = IO_L43N, Sch name = RED1

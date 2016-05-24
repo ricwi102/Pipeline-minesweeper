@@ -18,7 +18,7 @@ end ALU;
 architecture Behavioral of ALU is 
 
 --signal o_flag : std_logic := '0';
-signal c_flag : std_logic := '0';
+--signal c_flag : std_logic := '0';
 --signal f_flag : std_logic := '0';
 signal z_flag : std_logic := '0';
 signal n_flag : std_logic := '0';
@@ -60,7 +60,7 @@ begin
   end process;
 
   output <= flag_output(31 downto 0);
-  c_flag <= flag_output(32);
+  --c_flag <= flag_output(32);
   z_flag <= '1' when (conv_integer(flag_output(31 downto 0)) = 0) else '0';
   n_flag <= '1' when (flag_output(31) = '1') else '0';
 	

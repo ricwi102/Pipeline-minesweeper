@@ -16,17 +16,10 @@ entity register_mux is
 end register_mux;
 
 architecture Behavioral of register_mux is
-signal D4_help : std_logic_vector (31 downto 0) := (others => '0');
-signal Z4_help : std_logic_vector (31 downto 0) := (others => '0');
-signal IR4_help : std_logic_vector (31 downto 0) := (others => '0');
-alias command : std_logic_vector(5 downto 0) is IR4_help(31 downto 26);
+alias command : std_logic_vector(5 downto 0) is IR4(31 downto 26);
   
-begin
-  D4_help <= D4;
-  Z4_help <= Z4;
-  IR4_help <= IR4;
-
-  adr <= IR4_help(25 downto 21);
+begin  
+  adr <= IR4(25 downto 21);
   data <= Z4 when (command = "000011") else
           D4;
   we <= '0' when ((conv_integer(command) > 20)

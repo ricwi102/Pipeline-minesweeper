@@ -14,8 +14,7 @@ entity Regs is
     make_op_in			 							: in std_logic;
     keyboard_in			 							: in std_logic_vector (3 downto 0);
 		x_pos_out											: out std_logic_vector(4 downto 0);
-		y_pos_out											: out std_logic_vector(3 downto 0);
-    r10_test			 								: out std_logic_vector(31 downto 0)	
+		y_pos_out											: out std_logic_vector(3 downto 0)
     );
 end Regs;
 
@@ -56,6 +55,8 @@ begin  -- Behavioral
         when "01101" => r13 <= write_in;
 				when "01110" => r14 <= write_in;			-- marker X_pos reserved
         when "01111" => r15 <= write_in;
+			--	when "10000" => r16 <= write_in;
+			--  when "10001" => r17 <= write_in;
         when others => null;
       end case;
     end if;
@@ -65,7 +66,6 @@ begin  -- Behavioral
  out1 <= a2;
  out2 <= b2;
 
- r10_test <= r2;
 
 temp_a <= r0 when (read_address1 = "00000") else
           r1 when (read_address1 = "00001") else

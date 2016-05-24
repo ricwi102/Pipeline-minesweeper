@@ -29,10 +29,10 @@ component program_loader
 				);          
 end component;
 
-signal we					: std_logic;
-signal running_pl	: std_logic;
-signal instr_in		: std_logic_vector(31 downto 0); 
-signal PL_count   : std_logic_vector(9 downto 0);
+signal we					: std_logic := '0';
+signal running_pl	: std_logic := '0';
+signal instr_in		: std_logic_vector(31 downto 0) := (others => '0'); 
+signal PL_count   : std_logic_vector(9 downto 0) := (others => '0');
 
 
 begin 

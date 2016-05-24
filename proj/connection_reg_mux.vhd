@@ -47,8 +47,7 @@ component Regs is
 				make_op_in			 							: in std_logic;
 				keyboard_in			 							: in std_logic_vector(3 downto 0);
 				x_pos_out											: out std_logic_vector(4 downto 0);
-				y_pos_out											: out std_logic_vector(3 downto 0);
-				r10_test			 								: out std_logic_vector(31 downto 0)
+				y_pos_out											: out std_logic_vector(3 downto 0)				
 				);
 end component;
 
@@ -87,7 +86,7 @@ end component;
 
 component data_minne is
   port (	clk 			: in std_logic;
-       		adr 			: in std_logic_vector(8 downto 0); 	    	--Uses the D3 value for adresing.
+       		adr 			: in std_logic_vector(11 downto 0); 	    	--Uses the D3 value for adresing.
 					IR3_in		: in std_logic_vector(31 downto 0);
         	Z3_in 		: in std_logic_vector(31 downto 0);     	--Takes its value from "Z3" (B2 MUX)
         	data_out 	: out std_logic_vector(31 downto 0)		--Gives Z4 its value.
@@ -126,7 +125,7 @@ signal ALU_mux_out		: std_logic_vector (31 downto 0) := (others => '0');
 signal D3_int,D4_int	: std_logic_vector (31 downto 0) := (others => '0');
 signal Z4_int, Z3_int	: std_logic_vector (31 downto 0) := (others => '0');
 signal adr_internal 	: std_logic_vector (4 downto 0) := (others => '0');
-signal DM_adr 				: std_logic_vector (8 downto 0) := (others => '0');
+signal DM_adr 				: std_logic_vector (11 downto 0) := (others => '0');
 
 signal x_pos_int			: std_logic_vector(4 downto 0);
 signal y_pos_int			: std_logic_vector(3 downto 0);
@@ -140,7 +139,7 @@ alias command		: std_logic_vector (5 downto 0) is IR2_in(31 downto 26);
 
 begin
 
-DM_adr <= D3_int(8 downto 0);
+DM_adr <= D3_int(11 downto 0);
 
 D4_Z4_data <= write_data;
 D3 <= D3_int;
@@ -160,7 +159,7 @@ end process;
 U0 : Regs port map(clk => clk, rst => rst, w_enable => we_internal, 
 		   out1 => A2 , out2 => B2 , write_in => write_data ,
 		   read_address1 => read_adr_int1, read_address2 => read_adr_int2, write_address => adr_internal, make_op_in => MakeOp_internal,
-		    keyboard_in => KeyPressed_int, x_pos_out => x_pos_int, y_pos_out => y_pos_int, r10_test => r10_test); 
+		    keyboard_in => KeyPressed_int, x_pos_out => x_pos_int, y_pos_out => y_pos_int); 
 
 U1 : ALU_mux port map(clk => clk, rst => rst,
 		      reg => B2_mux, IR1 => IR1_in , IR2 => IR2_in, output => ALU_mux_out);	

@@ -29,8 +29,8 @@ begin
         if(rst = '1') then
           IM2 <= (others => '0');
         else    
-          IM2(10 downto 0) <= IR1(10 downto 0);
-          IM2(31 downto 11) <= (others => '0');
+          IM2(9 downto 0) <= IR1(9 downto 0);
+          IM2(31 downto 10) <= (others => IR1(10));
         end if;
       end if;
     end process;

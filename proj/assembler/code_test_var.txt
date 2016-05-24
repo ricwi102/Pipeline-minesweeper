@@ -1,6 +1,7 @@
 MOVE R1, 0;
 MOVE R2, 192;
 
+
 START_VALUES:				-- Sätt standardvärden till DM 
 STORE R1, R2, 0;
 ADD R1, R1, 1; 
@@ -86,22 +87,36 @@ NOP;
 DUMMY1:
 MOVE R7, R17;
 MOVE R6, R16;
-MOVE R5, 70;
-JMP PLACE_BOMB;
-NOP;
+MOVE R5, 50;
 DUMMY:
-ADD R6, R6, 6;							--GENERERA NYA X OCH Y
-;XOR R6, R6, 15;
-ADD R7, R7, 3;
-AND R7, R7, 7;
+ADD R6, R6, R16;							--GENERERA NYA X OCH Y
+XOR R6, R6, 12;
+ADD R7, R7, R17;
+XOR R7, R7, 7;
+
+;CMP R6, 0;
+;BGRR 3;
+;NOP;
+;ADD R6, R6, 19;
+
+;CMP R7, 0;
+;BGRR 3;
+;NOP;
+;ADD R7, R6, 14;
+
+
+AND R6, R6, 31
 CMP R6, 19;
 BNGR 3;
-NOP; 
-SUB R6, R6, 19;
+NOP;
+SUB R6, R6, 15;
+
+AND R7, R7, 15;
 CMP R7, 14;
 BNGR 3;
 NOP;
 SUB R7, R7, 14;
+
 CMP R5, 0;
 BNE PLACE_BOMB;
 NOP;
@@ -227,27 +242,59 @@ STORE R2, R3, 0;
 JMP GAME_LOOP;												-- JUMP TO TOP
 NOP;
 
-INSTR_R:
+
+INSTR_R:     -----  INSTRUCTION R  -------------
+MULT R1, R9, 20; 							-- pos for RÖJ
+ADD R2, R8, R1; 							-- ADD X + Y TO REGISTER 3
+LOAD R3, R2, 0;								-- LOAD TILE DATA FROM DM TO R3
+BTST R3, 5;
+BNE GAME_LOOP;
+NOP;						
+		
+AND R4, R3, 31;
+BTST R4, 4;										-- CHECK FOR BOMB
+BNE BOMB_HERE;
+NOP;
+
+GSTORE R2, R4, 0;
+ADD R4, R4, 32;
+STORE R2, R4, 0;
+CMP R4, 32;
+BEQ SPREAD;
+NOP;
+
+JMP GAME_LOOP;
+NOP;
+BOMB_HERE:
+MOVE R1, 11;
+;ADD R3, R3, 32;
+;STORE R2, R3, 0;
+GSTORE R2, R1, 0;
+;MOVE R8, 0;
+;MOVE R9, 0;
+JMP GAME_LOOP;
+NOP;
+
+
+GAME_OVER:
+ADD R8, R8, R10;
+ADD R9, R9, R11;
 MULT R1, R9, 20; 							-- pos for RÖJ
 ADD R2, R8, R1; 							-- ADD X + Y TO REGISTER 3
 LOAD R3, R2, 0;								-- LOAD TILE DATA FROM DM TO R3
 AND R4, R3, 31;
 BTST R4, 4;										-- CHECK FOR BOMB
-BNE BOMB_HERE;
+BEQ GAME_OVER;
 NOP;
+ADD R5, R5, 1;
+MOVE R4, 11;
 GSTORE R2, R4, 0;
-;ADD R4, R4, 32;
-STORE R2, R4, 0;
-;CMP R4, 32;
-;BEQ SPREAD;
+JMP GAME_OVER;
 NOP;
-JMP GAME_LOOP;
-NOP;
-BOMB_HERE:
-MOVE R1, 11;
-GSTORE R2, R1, 0;
-JMP GAME_LOOP;
-NOP;
+
+
+
+
 
 ;---------------------SPREAD------------------------
 
@@ -258,99 +305,99 @@ NOP;
 SPREAD:
 MOVE R5, 400			;STARTPOS I QUEUE = 400
 MOVE R4, 400 			;QUEUE-SIZE
-ADD R6, R8, 0
-ADD R7, R9, 0
+ADD R6, R8, 0			;TEMP X
+ADD R7, R9, 0			;TEMP Y
 
 
 SPREAD_MLOOP:	
 
-MOVE R11, 3;  -- Hur många loops i y-led
-MOVE R12, 1;	-- Startpos (minus) i y-led relativt nuvarande
+MOVE R11, 3;  				-- Hur många loops i y-led
+MOVE R12, 1;					-- Startpos (minus) i y-led relativt nuvarande
 
-CMP R7, 0;		-- Övre border
-BNER 4;
-NOP;
-MOVE R11, 2;
-MOVE R12, 0;
+CMP R7, 0;						-- Övre border: Kolla om Y-pos  är 0.
+BNER 4;								-- Hoppa 4 steg ner.
+NOP;	
+MOVE R11, 2;					--Om Y-pos=0 ändra loopen till 2.
+MOVE R12, 0;					--Hoppa upp 0 steg pga border.
 
-CMP R7, 14;		-- Undre border
+CMP R7, 14;						-- Undre border
 BNER 3;
 NOP;
 MOVE R11, 2;
 
-SUB R12, R7, R12;		-- Loop start position (y-led)
-ADD R11, R11, R12;  -- Loop slut position  (y-led)
+SUB R12, R7, R12;			-- Loop start position (y-led)
+ADD R11, R11, R12; 		-- Loop slut position  (y-led)
 
-MOVE R13, 3;    -- Hur många loops i x-led
-MOVE R14, 1;	-- Startpos (minus) i x-led relativt nuvarande
+MOVE R13, 3;   				-- Hur många loops i x-led
+MOVE R14, 1;					-- Startpos (minus) i x-led relativt nuvarande
 
-CMP R6, 0;		-- Vänster border
+CMP R6, 0;						-- Vänster border
 BNER 4;
 NOP;
 MOVE R13, 2;
 MOVE R14, 0;
 
-CMP R6, 19 ;	-- Höger border
+CMP R6, 19 ;				-- Höger border
 BNER 3;
 NOP;
 MOVE R13, 2;
 
 SUB R14, R6, R14;		-- Loop start position (X-led)
-ADD R13, R13, R14;	-- Loop slut position  (X-led)
+ADD R13, R13, R14;		-- Loop slut position  (X-led)
 
 ; R14 -> nuvarande x pos, R13 -> slut pos
 ; R12 -> nuvarande y pos, R11 -> slut pos
 
 LOOP_SPREAD:      
 
-ADD R15, R14, 0;
+ADD R15, R12, 0;
 
 LOOP_SPREAD2:
-MULT R1, R12, 20; 							-- pos for RÖJ
-ADD R1, R15, R1; 	-- ADD X + Y TO REGISTER 3
+MULT R1, R15, 20; 		Sätter pos i DM
+ADD R1, R14, R1	;		--||--
 
 
-LOAD R2, R1, 0;
-BTST R2, 5    ;
+LOAD R2, R1, 0;			ladda in rutan till R2.
+BTST R2, 5    ;			Kollar visited-biten.
 BNE SPREAD_SKIP2;
-NOP				;
-AND R3, R2, 15			;Behåller sifferkoden enbart.
-
-CMP R3, 0			;Kolla om det är en tom ruta.
-BNE SPREAD_SKIP1;
 NOP;
+AND R3, R2, 31			;Behåller sifferkoden enbart.
 
-STORE R4, R15, 0 		;
-ADD R4, R4, 1			;
-STORE R4, R12, 0 		;
-ADD R4, R4, 1
+CMP R3, 0						;Kolla om det är en tom ruta.
+BNE SPREAD_SKIP1		;
+NOP				;
+CMP R15, 0;
+BNG SPREAD_SKIP2;
+NOP;
+STORE R4, R14, 0 		;Lägger X-pos i kön
+STORE R4, R15, 1 		;Lägger y-pos i kön
+ADD R4, R4, 2				;Ökar queue-size
 
-SPREAD_SKIP1:
-GSTORE R1, R3, 0		;
-ADD R3, R3, 32			;
-STORE R1, R3, 0			;
+SPREAD_SKIP1:			
+
+GSTORE R1, R3, 0		;Skriver in siffran i grafikminnet.
+ADD R3, R3, 32			;Sätter visited-biten.
+STORE R1, R3, 0			;Röjer och sätter visited.
 
 SPREAD_SKIP2:	
-ADD R15, R15, 1;
-CMP R15, R13;
-BNE LOOP_SPREAD2;
+ADD R15, R15, 1;		Hoppa 1 i X-led.
+CMP R15, R11;				Kolla om Den hoppat klart i x-led.
+BNE LOOP_SPREAD2;		Hoppa till loop över X.
 NOP;
 
-ADD R12, R12, 1;
-CMP R12, R11;
+ADD R14, R14, 1;		Ökar Y med 1.
+CMP R14, R13;				Kollar om Y är Y-max.
 BNE LOOP_SPREAD;
-NOP
+NOP	       ;
 
-CMP R4, R5			;
-BEQ GAME_LOOP;
-NOP
+CMP R4, R5				;Kolla om botten och taket är samma
+BEQ GAME_LOOP			;Kön är slut, allt är spreadat.
+NOP				;
 
 LOAD R6, R5, 0			;
-ADD R5, R5, 1			;
-LOAD R7, R5, 0			;
-ADD R5, R5, 1			;
+LOAD R7, R5, 1			;
+ADD R5, R5, 2			;
 JMP SPREAD_MLOOP		;
-NOP
-
+NOP				;
 
 

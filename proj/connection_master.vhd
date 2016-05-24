@@ -14,9 +14,7 @@ entity connection_master is
 	 			vgaRed	            : out	std_logic_vector(2 downto 0);   -- VGA red
 	 			vgaGreen            : out std_logic_vector(2 downto 0);     -- VGA green
 	 			vgaBlue	        	  : out std_logic_vector(2 downto 1);     -- VGA blue
-
-				r10_test	    			: out std_logic_vector(31 downto 0);
-				rad3_out		: out std_logic_vector(5 downto 0);
+				
 			
 				rx									: in std_logic
 	);
@@ -47,9 +45,7 @@ component connection_IR_logic
 
     z_flag	: in std_logic;
 		n_flag 	: in std_logic;
-		rx			: in std_logic;
-
-		rad3_out		: out std_logic_vector(5 downto 0)
+		rx			: in std_logic
     );  
 end component;
 
@@ -108,8 +104,7 @@ U0 : connection_IR_logic port map(clk => clk, rst => rst,
 				  IR3_o => IR3_internal, IR4_o => IR4_internal,
 				  ALU_A_out => ALU_A, ALU_B_out => ALU_B,				  
 				  A2_in => A2, B2_in => B2, D3_in => D3, D4_Z4_in => D4_Z4,
-				  z_flag => z_flag_internal, n_flag => n_flag_internal, rx => rx,
-					rad3_out => rad3_out);	
+				  z_flag => z_flag_internal, n_flag => n_flag_internal, rx => rx);	
 
 
 U1 : connection_reg_mux port map(clk => clk, rst => rst,			
@@ -117,7 +112,7 @@ U1 : connection_reg_mux port map(clk => clk, rst => rst,
 				  IR3_in => IR3_internal, IR4_in => IR4_internal,
 				  A2_mux => ALU_A, B2_mux => ALU_B, A2 => A2, B2 => B2,		  
 				  D3 => D3, D4_Z4_data => D4_Z4, z_flag => z_flag_internal, n_flag => n_flag_internal,
-					PS2KeyboardCLK => PS2KeyboardCLK, PS2KeyboardData => PS2KeyboardData, r10_test => r10_test, 
+					PS2KeyboardCLK => PS2KeyboardCLK, PS2KeyboardData => PS2KeyboardData, 
 					Hsync => Hsync, Vsync => Vsync, vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);	
 
 

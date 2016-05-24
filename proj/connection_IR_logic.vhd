@@ -24,8 +24,7 @@ entity connection_IR_logic is
 
     z_flag			: in std_logic;
 		n_flag      : in std_logic;
-
-		rad3_out 		: out std_logic_vector(5 downto 0);
+	
 	
 		rx					: in std_logic
     );
@@ -116,7 +115,7 @@ begin  -- Behavioral
   IR3_o <= IR3_value;
   IR4_o <= IR4_value;
 
-	rad3_out <= PM_internal(31 downto 26);
+
  
 
 --IR portarna.

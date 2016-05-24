@@ -21,10 +21,10 @@ end jump_stall;
 
 architecture Behavioral of jump_stall is
   
-  signal extend	        : std_logic_vector(31 downto 0) := (others => '0');
-  signal PC							: std_logic_vector(31 downto 0) := (others => '0');
-  signal PC1						: std_logic_vector(31 downto 0) := (others => '0');
-  signal PC2						: std_logic_vector(31 downto 0) := (others => '0');
+  signal extend	        : std_logic_vector(9 downto 0) := (others => '0');
+  signal PC							: std_logic_vector(9 downto 0) := (others => '0');
+  signal PC1						: std_logic_vector(9 downto 0) := (others => '0');
+  signal PC2						: std_logic_vector(9 downto 0) := (others => '0');
   
   signal stall_rom     	: std_logic_vector(34 downto 0) := b"000_0000_0001_1111_1111_1111_1111_1111_1000";	
   signal IR1_internal   : std_logic_vector(31 downto 0) := (others => '0');
@@ -114,11 +114,10 @@ begin  -- Behoavioral
         end if;
       end if;
     end process;
-  PC_out <= PC(9 downto 0);
+  PC_out <= PC;
           
 
-  extend(24 downto 0) <= IR1_internal(24 downto 0);
-  extend(31 downto 25) <= (others => IR1_internal(25));  
+  extend(9 downto 0) <= IR1_internal(9 downto 0);
 
 
   -- MUX --  
