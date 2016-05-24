@@ -74,8 +74,8 @@ begin  -- Behoavioral
 												or (z_flag_in = '0' and conv_integer(command_ir2) >= 29 and conv_integer(command_ir2) <= 30))
               else '0';
 
-	n_flag_j <= '1' when ((n_flag_in = '1' and conv_integer(command_ir2) >= 31 and conv_integer(command_ir2) <= 32) 
-												or (n_flag_in = '0' and conv_integer(command_ir2) >= 33 and conv_integer(command_ir2) <= 34))
+	n_flag_j <= '1' when ((n_flag_in = '0' and conv_integer(command_ir2) >= 31 and conv_integer(command_ir2) <= 32) 
+												or (n_flag_in = '1' and conv_integer(command_ir2) >= 33 and conv_integer(command_ir2) <= 34))
               else '0';
   
   take_jump <= '1' when (j = '1' or z_flag_j = '1' or n_flag_j = '1') else '0';

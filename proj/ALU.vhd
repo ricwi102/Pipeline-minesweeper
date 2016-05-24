@@ -44,8 +44,8 @@ begin
         when "001110" => flag_output <= ('0' & input1) and ('0' & input2);
         when "001111" => flag_output <= ('0' & input1) or ('0' & input2);
         when "010000" => flag_output <= ('0' & input1) or ('0' & input2);
-        when "010001" => flag_output <= (others => '0');   --LSR
-        when "010010" => flag_output <= (others => '0');  --LSR2
+        when "010001" => flag_output <= ('0' & input1) xor ('0' & input2);
+        when "010010" => flag_output <= ('0' & input1) xor ('0' & input2);
         when "010011" => flag_output <= (others => '0');  --LSL
         when "010100" => flag_output <= (others => '0');  --LSL2
         when "010101" => flag_output <= ('0' & input2) - ('0' & input1);

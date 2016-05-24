@@ -27,6 +27,7 @@ architecture Behavioral of Regs is
   signal r4, r5, r6, r7 	: std_logic_vector(31 downto 0) := (others => '0');
   signal r8, r9, r10, r11 	: std_logic_vector(31 downto 0) := (others => '0');
 	signal r12, r13, r14, r15 	: std_logic_vector(31 downto 0) := (others => '0');
+	signal r16, r17							: std_logic_vector(31 downto 0) := (others => '0');
   signal a2, b2, temp_a, temp_b : std_logic_vector(31 downto 0) := (others => '0');
   
 
@@ -82,6 +83,8 @@ temp_a <= r0 when (read_address1 = "00000") else
           r13 when (read_address1 = "01101") else
           r14 when (read_address1 = "01110") else
           r15 when (read_address1 = "01111") else
+					r16 when (read_address1 = "10000") else
+					r17 when (read_address1 = "10001") else
           (others => '0');
            
  temp_b <= r0 when (read_address2 = "00000") else
@@ -100,6 +103,8 @@ temp_a <= r0 when (read_address1 = "00000") else
            r13 when (read_address2 = "01101") else
            r14 when (read_address2 = "01110") else
            r15 when (read_address2 = "01111") else
+					 r16 when (read_address2 = "10000") else				--randX
+					 r17 when (read_address2 = "10001") else				--randY
            (others => '0');
 
                
@@ -117,6 +122,30 @@ begin
 			r10 <= write_in;		
     end if;
   end if;
+end process;
+
+--incr randX 
+process(clk)
+begin
+	if rising_edge(clk) then
+		if(r16(4 downto 0) = "10011") then
+			r16 <= (others => '0');
+		else
+			r16 <= r16 + 1;
+	 end if;
+	end if;
+end process;
+
+--incr randY 
+process(clk)
+begin
+	if rising_edge(clk) then
+		if(r17(3 downto 0) = "1110") then
+			r17 <= (others => '0');
+		else
+			r17 <= r17 + 1;
+	 end if;
+	end if;
 end process;
 
 

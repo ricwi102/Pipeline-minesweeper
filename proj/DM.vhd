@@ -15,7 +15,7 @@ architecture Behavioral of data_minne is
 
 -- Deklaration av ett dubbelportat block-RAM
 -- med 2048 adresser av 8 bitars bredd.
-type ram_t is array (0 to 511) of
+type ram_t is array (0 to 1023) of
   std_logic_vector(7 downto 0);
 
 -- Nollställ alla bitar på alla adresser

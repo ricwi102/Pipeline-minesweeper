@@ -93,7 +93,7 @@ DUMMY:
 ADD R6, R6, 6;							--GENERERA NYA X OCH Y
 ;XOR R6, R6, 15;
 ADD R7, R7, 3;
-AND R7, R7, 7;
+OR R7, R7, 7;
 CMP R6, 19;
 BNGR 3;
 NOP; 

@@ -28,9 +28,9 @@ EX: LOAD r1, # -> r1 = (noll-reg + #)
 001101: AND reg1, reg2, #			-> move (reg2 and #) ot reg1
 001110:	AND reg1, reg2, reg3	-> move (reg2 and reg3) ot reg1
 001111:	OR reg1, reg2,  #			-> move (reg2 or #) ot reg1
-010000: OR reg1, reg2					-> move (reg2 or reg3) ot reg1
-010001: LSR reg1, #						-> shift reg1 # times right
-010010: LSR reg1, reg2  			-> shift reg1 ( (reg2) mod 32) times right
+010000: OR reg1, reg2, reg3					-> move (reg2 or reg3) ot reg1
+010001: XOR reg1, reg2, #						-> move (reg2 xor #) ot reg1
+010010: XOR reg1, reg2, reg3  			-> move (reg2 xor reg3) ot reg1
 010011: LSL reg1, #						-> shift reg1 # times left
 010100: LSL reg1, reg2  			-> shift reg1 (	(reg2 + #) mod 32) times left
 010101:	CMP reg1, #						-> compare reg1 and #
@@ -47,7 +47,7 @@ EX: LOAD r1, # -> r1 = (noll-reg + #)
 100000:	BGRR #								-> if (n = 1) jump to (PC + #)
 100001:	BNG  #								-> if (n = 0) jump to #
 100010:	BNGR #								-> if (n = 0) jump to (PC + #)
-100011:
+100011: 
 100100:
 100101:
 100110:

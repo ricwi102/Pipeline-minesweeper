@@ -45,7 +45,7 @@ begin
                              command = "001011" or
                              command = "001101" or
                              command = "001111" or
-                             command = "010010" or
+														 command = "010001" or
                              command = "010100" or
                              command = "010101" or
                              command = "010111") else
