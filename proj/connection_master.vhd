@@ -15,6 +15,8 @@ entity connection_master is
 	 			vgaGreen            : out std_logic_vector(2 downto 0);     -- VGA green
 	 			vgaBlue	        	  : out std_logic_vector(2 downto 1);     -- VGA blue
 				
+				segments		: out std_logic_vector(6 downto 0);
+				seg_pos			: out std_logic_vector(3 downto 0);
 			
 				rx									: in std_logic
 	);
@@ -36,6 +38,9 @@ component connection_IR_logic
 
     ALU_A_out   : out std_logic_vector(31 downto 0);  
     ALU_B_out   : out std_logic_vector(31 downto 0);
+
+		segments		: out std_logic_vector(6 downto 0);
+		seg_pos			: out std_logic_vector(3 downto 0);
 
     
     A2_in 	: in std_logic_vector(31 downto 0);
@@ -102,8 +107,8 @@ begin
 U0 : connection_IR_logic port map(clk => clk, rst => rst,
 		  		  IR1_o => IR1_internal, IR2_o => IR2_internal,
 				  IR3_o => IR3_internal, IR4_o => IR4_internal,
-				  ALU_A_out => ALU_A, ALU_B_out => ALU_B,				  
-				  A2_in => A2, B2_in => B2, D3_in => D3, D4_Z4_in => D4_Z4,
+				  ALU_A_out => ALU_A, ALU_B_out => ALU_B,	segments => segments,			  
+				  seg_pos => seg_pos, A2_in => A2, B2_in => B2, D3_in => D3, D4_Z4_in => D4_Z4,
 				  z_flag => z_flag_internal, n_flag => n_flag_internal, rx => rx);	
 
 

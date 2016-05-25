@@ -47,7 +47,9 @@ def main(): #main start
 							'BGR' 	: 31,
 							'BGRR' 	: 32,
 							'BNG' 	: 33,
-							'BNGR' 	: 34}
+							'BNGR' 	: 34,
+							'CNTE'  : 35,
+							'CNTD'	: 36}
 	
 	contains_const = (2, 3, 4, 5, 6, 8, 9, 11, 13, 15, 17, 21, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34)
 	variables = dict()
@@ -78,7 +80,7 @@ def main(): #main start
 
 		instr_list[0] = instr_num * 4
 
-		if not(temp in ('NOP', 'HALT')):		
+		if not(temp in ('NOP', 'HALT', 'CNTE', 'CNTD')):		
 			expected = get_expected(temp)
 
 			args_i = conv_list(s[1:], expected, variables)		

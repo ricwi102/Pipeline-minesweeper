@@ -16,6 +16,9 @@ entity connection_IR_logic is
 
     ALU_A_out   : out std_logic_vector(31 downto 0);  
     ALU_B_out   : out std_logic_vector(31 downto 0);
+
+		segments		: out std_logic_vector(6 downto 0);
+		seg_pos			: out std_logic_vector(3 downto 0);
   
     A2_in 			: in std_logic_vector(31 downto 0);
     B2_in 			: in std_logic_vector(31 downto 0);
@@ -91,6 +94,14 @@ architecture Behavioral of connection_IR_logic is
 	);
   end component;
 
+	component timer is
+  port (
+    clk, rst : in std_logic;          -- 
+    segments : out std_logic_vector(6 downto 0);
+    pos : out std_logic_vector(3 downto 0);
+		IR1_in : in std_logic_vector(31 downto 0)
+    );   
+	 end component;
   
 
   -- Interna
@@ -136,6 +147,8 @@ begin  -- Behavioral
 															z_flag_in => z_flag, n_flag_in => n_flag, running_pl_in => running_pl); 
 
  port3 : PM port map(clk => clk, rst => rst, address => PC_internal, instr_out => PM_internal, rx => rx, running_out => running_pl);
+
+port4 : timer port map(clk => clk, rst => rst, segments => segments, pos => seg_pos, IR1_in => IR1_value);
 
 
 

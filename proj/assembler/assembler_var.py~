@@ -34,7 +34,7 @@ def main(): #main start
 							'MULT' 	: 11,
 							'AND' 	: 13,
 							'OR' 		: 15,
-							'LSR' 	: 17,
+							'XOR' 	: 17,
 							'LSL' 	: 19,
 							'CMP' 	: 21,
 							'BTST' 	: 23,
@@ -49,7 +49,7 @@ def main(): #main start
 							'BNG' 	: 33,
 							'BNGR' 	: 34}
 	
-	contains_const = (2, 3, 4, 5, 6, 8, 9, 11, 13, 15, 21, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34)
+	contains_const = (2, 3, 4, 5, 6, 8, 9, 11, 13, 15, 17, 21, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34)
 	variables = dict()
 
 	
@@ -59,7 +59,7 @@ def main(): #main start
 		instr_num = 0		
 		instr_list = [0, 0, 0, 0]
 
-		if (temp in ('ADD', 'MULT', 'AND', 'OR')):
+		if (temp in ('ADD', 'MULT', 'AND', 'OR', 'XOR')):
 			instr_num = determine_instr(s, commands[temp], 3)
 		elif (temp in ('CMP', 'BTST')):
 			instr_num = determine_instr(s, commands[temp], 2)

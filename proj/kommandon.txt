@@ -47,8 +47,8 @@ EX: LOAD r1, # -> r1 = (noll-reg + #)
 100000:	BGRR #								-> if (n = 1) jump to (PC + #)
 100001:	BNG  #								-> if (n = 0) jump to #
 100010:	BNGR #								-> if (n = 0) jump to (PC + #)
-100011: 
-100100:
+100011: CNTE									-> start timer
+100100:	CNTD									-> stop timer
 100101:
 100110:
 100111:
