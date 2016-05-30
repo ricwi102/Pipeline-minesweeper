@@ -4,18 +4,17 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 
--- entity
 entity IR is
-  port ( clk, rst       : in std_logic;                         --System clock
-       
-	 IR1_out        : out std_logic_vector(31 downto 0);   --Output
-	 IR2_out        : out std_logic_vector(31 downto 0);   --Output
-	 IR3_out        : out std_logic_vector(31 downto 0);   --Output
-         IR4_out        : out std_logic_vector(31 downto 0);
+  port ( clk, rst       : in std_logic;                       --System clock and reset   
+  
+	 			IR1_out         : out std_logic_vector(31 downto 0);  --IR1 output
+	 			IR2_out         : out std_logic_vector(31 downto 0);  --IR2 output
+			  IR3_out         : out std_logic_vector(31 downto 0);  --IR3 output
+        IR4_out         : out std_logic_vector(31 downto 0);	--IR4 output
 
-	 IR1_in		: in std_logic_vector(31 downto 0); 
-	 IR2_in 	: in std_logic_vector(31 downto 0)
-         );   --Output
+	 			IR1_in					: in std_logic_vector(31 downto 0); 	
+	 			IR2_in 					: in std_logic_vector(31 downto 0)		
+         ); 
 	
 end IR;
 

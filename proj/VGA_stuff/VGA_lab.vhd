@@ -22,9 +22,9 @@ entity VGA_lab is
 				D3_in									: in std_logic_vector(31 downto 0);
 	 			Hsync	                : out std_logic;                        -- horizontal sync
 	 			Vsync	                : out std_logic;                        -- vertical sync
-	 			vgaRed	              : out	std_logic_vector(2 downto 0);   -- VGA red
+	 			vgaRed	              : out	std_logic_vector(2 downto 0);   	-- VGA red
 			 	vgaGreen              : out std_logic_vector(2 downto 0);     -- VGA green
-			 	vgaBlue	        			: out std_logic_vector(2 downto 1));     -- VGA blue
+			 	vgaBlue	        			: out std_logic_vector(2 downto 1));    -- VGA blue
 end VGA_lab;
 
 
@@ -39,28 +39,28 @@ architecture Behavioral of VGA_lab is
            data_in	      : in std_logic_vector(7 downto 0);      -- data in
            addr1	        : in unsigned(10 downto 0);             -- address
 	 -- port 2
-           data_out	    : out std_logic_vector(7 downto 0);     -- data out
+           data_out	    : out std_logic_vector(7 downto 0);     	-- data out
            addr2					: in unsigned(10 downto 0));            -- address
   end component;
 	
   -- VGA motor component
   component VGA_MOTOR
-    port ( clk			: in std_logic;                         -- system clock
-           rst			: in std_logic;                         -- reset
+    port ( clk			: in std_logic;                       			  -- system clock
+           rst			: in std_logic;                         			-- reset
 					 x_pos		: in std_logic_vector(4 downto 0);
 					 y_pos		: in std_logic_vector(3 downto 0);
-           data			: in std_logic_vector(7 downto 0);      -- data
-           addr			: out unsigned(10 downto 0);            -- address
-           vgaRed		: out std_logic_vector(2 downto 0);     -- VGA red
-           vgaGreen	        : out std_logic_vector(2 downto 0);     -- VGA green
-           vgaBlue		: out std_logic_vector(2 downto 1);     -- VGA blue
-           Hsync		: out std_logic;                        -- horizontal sync
-           Vsync		: out std_logic);                       -- vertical sync
+           data			: in std_logic_vector(7 downto 0);      			-- data
+           addr			: out unsigned(10 downto 0);            			-- address
+           vgaRed		: out std_logic_vector(2 downto 0);     			-- VGA red
+           vgaGreen	        : out std_logic_vector(2 downto 0);   -- VGA green
+           vgaBlue		: out std_logic_vector(2 downto 1);     		-- VGA blue
+           Hsync		: out std_logic;                        			-- horizontal sync
+           Vsync		: out std_logic);                       			-- vertical sync
   end component;
 	
   -- intermediate signals between PICT_MEM and VGA_MOTOR
   signal	data_out2_s     : std_logic_vector(7 downto 0);         -- data
-  signal	addr2_s		: unsigned(10 downto 0);                -- address
+  signal	addr2_s		: unsigned(10 downto 0);               			  -- address
 	
 begin
 

@@ -11,11 +11,11 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 --use UNISIM.VComponents.all;
 
 entity program_loader is
-    Port (clk,rst, rx 	: in  STD_LOGIC;
-          instr_out			: out STD_LOGIC_VECTOR(31 downto 0);
-	  			PM_count_out  : out std_logic_vector(9 downto 0);
+    Port (clk,rst, rx 	: in  STD_LOGIC;											--System clock, reset and input
+          instr_out			: out STD_LOGIC_VECTOR(31 downto 0);	--output
+	  			PM_count_out  : out std_logic_vector(9 downto 0);		--Andress pointer in pm
 	  			we_out				: out std_logic;
-					running_out		: out std_logic
+					running_out		: out std_logic												--Program_loader is running
 	  			);          
 end program_loader;
 

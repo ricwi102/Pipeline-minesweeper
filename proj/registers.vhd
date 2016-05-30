@@ -5,13 +5,14 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity Regs is
   port (
-    clk, rst 			 	 							: in std_logic;
-    w_enable 			 	 							: in std_logic; 
+    clk, rst 			 	 							: in std_logic;												--System Clock
+    w_enable 			 	 							: in std_logic; 											
     out1, out2 			 							: out std_logic_vector (31 downto 0);
     write_in 			 								: in std_logic_vector (31 downto 0);      
     read_address1, read_address2 	: in std_logic_vector (4 downto 0);
     write_address 		 						: in std_logic_vector (4 downto 0);
-    make_op_in			 							: in std_logic;
+    
+		make_op_in			 							: in std_logic;
     keyboard_in			 							: in std_logic_vector (3 downto 0);
 		x_pos_out											: out std_logic_vector(4 downto 0);
 		y_pos_out											: out std_logic_vector(3 downto 0)
@@ -21,22 +22,24 @@ end Regs;
 
 
 architecture Behavioral of Regs is
-
-  signal r0, r1, r2, r3  	: std_logic_vector(31 downto 0) := (others => '0');  -- Register
-  signal r4, r5, r6, r7 	: std_logic_vector(31 downto 0) := (others => '0');
-  signal r8, r9, r10, r11 	: std_logic_vector(31 downto 0) := (others => '0');
-	signal r12, r13, r14, r15 	: std_logic_vector(31 downto 0) := (others => '0');
-	signal r16, r17							: std_logic_vector(31 downto 0) := (others => '0');
-  signal a2, b2, temp_a, temp_b : std_logic_vector(31 downto 0) := (others => '0');
+	--Registers
+  signal r0, r1, r2, r3  					: std_logic_vector(31 downto 0) := (others => '0');
+  signal r4, r5, r6, r7 					: std_logic_vector(31 downto 0) := (others => '0');
+  signal r8, r9, r10, r11 				: std_logic_vector(31 downto 0) := (others => '0');
+	signal r12, r13, r14, r15 			: std_logic_vector(31 downto 0) := (others => '0');
+	signal r16, r17									: std_logic_vector(31 downto 0) := (others => '0');
+  signal a2, b2, temp_a, temp_b 	: std_logic_vector(31 downto 0) := (others => '0');
   
 
   
 begin  -- Behavioral
+
  process (clk) begin
   if rising_edge(clk) then                    
      a2 <= temp_a;    
      b2 <= temp_b;
     
+		-- Checks the intructions so that we write in the right register.
     if(w_enable = '1') then
       case write_address is
         when "00000" => r0 <= write_in;
@@ -49,11 +52,11 @@ begin  -- Behavioral
         when "00111" => r7 <= write_in;
 				when "01000" => r8 <= write_in;			-- marker X_pos reserved
         when "01001" => r9 <= write_in;     -- marker Y_pos reserved
-        --when "01010" => r10 <= write_in;    --Keyboard reserved
+      --when "01010" => r10 <= write_in;    -- Keyboard reserved
         when "01011" => r11 <= write_in;
 				when "01100" => r12 <= write_in;
         when "01101" => r13 <= write_in;
-				when "01110" => r14 <= write_in;			-- marker X_pos reserved
+				when "01110" => r14 <= write_in;
         when "01111" => r15 <= write_in;
 			--	when "10000" => r16 <= write_in;
 			--  when "10001" => r17 <= write_in;
@@ -111,6 +114,7 @@ temp_a <= r0 when (read_address1 = "00000") else
 	
  x_pos_out <= r8(4 downto 0);
  y_pos_out <= r9(3 downto 0);
+
  --Read keyboard data
 process(clk)
 begin               

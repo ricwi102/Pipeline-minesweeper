@@ -23,14 +23,14 @@ end VGA_MOTOR;
 -- architecture
 architecture Behavioral of VGA_MOTOR is
 
-  signal	Xpixel	        : unsigned(9 downto 0);         -- Horizontal pixel counter
-  signal	Ypixel	        : unsigned(9 downto 0);		-- Vertical pixel counter
-  signal	ClkDiv	        : unsigned(1 downto 0);		-- Clock divisor, to generate 25 MHz signal
-  signal	Clk25						: std_logic;			-- One pulse width 25 MHz signal
+  signal	Xpixel	        : unsigned(9 downto 0);     -- Horizontal pixel counter
+  signal	Ypixel	        : unsigned(9 downto 0);			-- Vertical pixel counter
+  signal	ClkDiv	        : unsigned(1 downto 0);			-- Clock divisor, to generate 25 MHz signal
+  signal	Clk25						: std_logic;								-- One pulse width 25 MHz signal
   signal	nextrow					: std_logic;	
 		
   signal 	tilePixel       : std_logic_vector(7 downto 0);	-- Tile pixel data
-  signal	tileAddr				: unsigned(12 downto 0);	-- Tile address
+  signal	tileAddr				: unsigned(12 downto 0);				-- Tile address
 
   signal 	markerPixel			: std_logic_vector(7 downto 0);
   signal 	pixel_out				: std_logic_vector(7 downto 0);
@@ -366,6 +366,7 @@ begin
     end if;
   end process;
 
+	--Check if it is the position of the marker 
  process(clk)
  begin
    if rising_edge(clk) then
@@ -390,14 +391,14 @@ begin
  
   pixel_out <= tilePixel when (markerPixel = x"ff") else markerPixel;
 
-  vgaRed(2) 	<= pixel_out(7);
-  vgaRed(1) 	<= pixel_out(6);
-  vgaRed(0) 	<= pixel_out(5);
+  vgaRed(2) 		<= pixel_out(7);
+  vgaRed(1) 		<= pixel_out(6);
+  vgaRed(0) 		<= pixel_out(5);
   vgaGreen(2)   <= pixel_out(4);
   vgaGreen(1)   <= pixel_out(3);
   vgaGreen(0)   <= pixel_out(2);
-  vgaBlue(2) 	<= pixel_out(1);
-  vgaBlue(1) 	<= pixel_out(0);
+  vgaBlue(2) 		<= pixel_out(1);
+  vgaBlue(1) 		<= pixel_out(0);
   
 
 

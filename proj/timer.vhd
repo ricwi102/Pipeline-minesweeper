@@ -6,32 +6,34 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity timer is
   
   port (
-    clk, rst : in std_logic;          -- 
-    segments : out std_logic_vector(6 downto 0);
-    pos : out std_logic_vector(3 downto 0);
-		IR1_in : in std_logic_vector(31 downto 0)
+    clk, rst 		: in std_logic;         						 -- System Clock and reset
+    segments 		: out std_logic_vector(6 downto 0);	 -- 8-segment display
+    pos 				: out std_logic_vector(3 downto 0);	 -- Pos of which 8-segments to show
+		IR1_in 			: in std_logic_vector(31 downto 0)
     );
     
 end timer;
 
 architecture Behavioral of timer is
-signal count  : std_logic_vector(17 downto 0) := (others => '0');
-signal tenK_c1 : std_logic_vector(13 downto 0) := (others => '0');
-signal tenK_c2 : std_logic_vector(13 downto 0) := (others => '0');
-signal time_pulse : std_logic := '0';   -- sekunder aboo
-signal lp : std_logic := '0';
-signal first  : std_logic_vector(3 downto 0) := (others => '0');
-signal second : std_logic_vector(3 downto 0) := (others => '0');
-signal third  : std_logic_vector(3 downto 0) := (others => '0');
-signal fourth : std_logic_vector(3 downto 0) := (others => '0');
-signal v : std_logic_vector(3 downto 0) := (others => '0');
-signal lp1, lp2, lp3, lp4 : std_logic := '0';
-signal count_enable				:std_logic;
-signal ce_last				:std_logic;
-signal ce_op			:std_logic;
+signal count  								: std_logic_vector(17 downto 0) := (others => '0');	-- Position count
+signal tenK_c1 								: std_logic_vector(13 downto 0) := (others => '0'); -- 10 000 ticks counter
+signal tenK_c2 								: std_logic_vector(13 downto 0) := (others => '0'); -- 10 000 ticks counter
+signal time_pulse 						: std_logic := '0';   															-- seconds
+signal lp 										: std_logic := '0';
+signal first  								: std_logic_vector(3 downto 0) := (others => '0');	-- seconds
+signal second 								: std_logic_vector(3 downto 0) := (others => '0');	-- tens
+signal third  								: std_logic_vector(3 downto 0) := (others => '0');	-- hundreds
+signal fourth 								: std_logic_vector(3 downto 0) := (others => '0');	-- thousands
+signal v 											: std_logic_vector(3 downto 0) := (others => '0');	-- Number to show
+signal lp1, lp2, lp3, lp4 		: std_logic := '0';
+signal count_enable						: std_logic;
+signal ce_last								: std_logic;
+signal ce_op									: std_logic;
                                                         
   
 begin 
+ 
+	--position counter
   counter:process(clk) begin
      if rising_edge(clk) then
        if rst = '1' then
@@ -48,6 +50,7 @@ begin
      end if;
   end process;
 
+-- first 10 000 counter
   process (clk) begin
     if rising_edge(clk) then
       if rst = '1' or ce_op = '1' then
@@ -62,6 +65,7 @@ begin
   end process;
   lp <= '1' when(tenK_c1 = 10000) else '0'; 
 
+-- second 10 000 counter
  process (clk) begin 
     if rising_edge(clk) then
       if rst = '1' or ce_op = '1' then
@@ -81,7 +85,7 @@ time_pulse <= '1' when (tenK_c2 = 10000) else '0';
   
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
-  
+--second-counter  
  process (clk) begin 
     if rising_edge(clk) then
       if rst = '1' or ce_op = '1' then
@@ -98,6 +102,7 @@ time_pulse <= '1' when (tenK_c2 = 10000) else '0';
   end process;
   lp1 <= '1' when (first = 10) else '0';
   
+--ten-seconds-counter
    process (clk) begin 
     if rising_edge(clk) then
       if rst = '1' or ce_op = '1' then
@@ -114,6 +119,7 @@ time_pulse <= '1' when (tenK_c2 = 10000) else '0';
   end process;
   lp2 <= '1' when (second = 10) else '0';
 
+--hundred-seconds-counter
    process (clk) begin 
     if rising_edge(clk) then
       if rst = '1' or ce_op = '1' then
@@ -130,6 +136,7 @@ time_pulse <= '1' when (tenK_c2 = 10000) else '0';
   end process;
   lp3 <= '1' when (third = 10) else '0';
 
+--thousand-seconds-counter
    process (clk) begin 
     if rising_edge(clk) then
       if rst = '1' or ce_op = '1' then
@@ -146,6 +153,7 @@ time_pulse <= '1' when (tenK_c2 = 10000) else '0';
   end process;
   lp4 <= '1' when (fourth = 10) else '0';
 
+--Makes the right segments to light up
   process(clk) begin
      if rising_edge(clk) then 
        case v is
@@ -164,7 +172,7 @@ time_pulse <= '1' when (tenK_c2 = 10000) else '0';
      end if;
   end process;
        
-
+--Gives V the right number.
   with count(17 downto 16) select
      v <= first when "00",
           second when "01",	
@@ -172,7 +180,7 @@ time_pulse <= '1' when (tenK_c2 = 10000) else '0';
           fourth when others;
 
 
-
+--Start, Stop and reset clock
 process(clk) begin
 	if rising_edge(clk) then
 		ce_last <= count_enable;

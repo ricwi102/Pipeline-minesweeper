@@ -8,6 +8,8 @@ MOVE R8, 0;
 MOVE R9, 0;
 MOVE R10, 0;
 
+CNTD;
+
 
 START_VALUES:				-- Sätt standardvärden till DM 
 
@@ -97,7 +99,7 @@ NOP;
 DUMMY1:
 MOVE R7, R17;
 MOVE R6, R16;
-MOVE R5, 70;
+MOVE R5, 10;
 DUMMY:
 ADD R6, R6, R16;							--GENERERA NYA X OCH Y
 XOR R6, R6, 12;
@@ -124,7 +126,7 @@ CMP R5, 0;
 BNE PLACE_BOMB;
 NOP;
 
-MOVE R0, 230;
+MOVE R0, 290;
 MOVE R1, 350;
 STORE R1, R0, 0; -- set remaining uncleared tiles
 CNTE;

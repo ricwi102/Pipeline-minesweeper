@@ -11,23 +11,28 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 --use UNISIM.VComponents.all;
 
 entity program_loader is
-    Port (clk,rst, rx 	: in  STD_LOGIC;
-          instr_out	: out STD_LOGIC_VECTOR(31 downto 0);
-	  PM_count_out  : out std_logic_vector(15 downto 0);
-	  we_out	: out std_logic
-	  );          
+    Port (clk,rst, rx 	: in  STD_LOGIC;											--System clock, reset and input
+          instr_out			: out STD_LOGIC_VECTOR(31 downto 0);	--output
+	  			PM_count_out  : out std_logic_vector(9 downto 0);		--Andress pointer in pm
+	  			we_out				: out std_logic;
+					running_out		: out std_logic												--Program_loader is running
+	  			);          
 end program_loader;
 
 architecture Behavioral of program_loader is
-  signal PM_count 	: std_logic_vector(15 downto 0) := (others => '0');   
-  signal instr_int	: std_logic_vector(31 downto 0);
+  signal PM_count 	: std_logic_vector(9 downto 0) := (others => '0');   
+  signal instr_int	: std_logic_vector(31 downto 0) := (others => '0');
   signal we					: std_logic := '0';
   signal reading 		: std_logic := '0';	
+	signal running 		: std_logic := '0';	
+	signal run_last 	: std_logic;
+	signal run_op			: std_logic;	
 	signal rx1, rx2		: std_logic;
 	signal sp, lp			: std_logic;
 	signal pulsecount : std_logic_vector(9 downto 0);
 	signal sreg				: std_logic_vector(9 downto 0);
-	signal pos				: std_logic_vector(1 downto 0);
+	signal pos, last_pos	: std_logic_vector(1 downto 0);	
+	signal pos_op			: std_logic;
 
 
   signal shiftcount : std_logic_vector(3 downto 0) := (others => '0');
@@ -110,8 +115,11 @@ begin
       elsif lp = '1' then 
          pos <= pos + 1;
       end if;
+			last_pos <= pos;
     end if;
   end process;  
+	pos_op <= '1' when (pos = "00" and last_pos = "11") else '0';
+	
 
   -- *****************************
   -- * 32 bit register           *
@@ -124,10 +132,10 @@ begin
          instr_int <= (others => '0');
       elsif lp = '1' then 
          case pos is
-           when "00" => instr_int(7 downto 0) <= sreg(8 downto 1);
-           when "01" => instr_int(15 downto 8) <= sreg(8 downto 1);
-           when "10" => instr_int(23 downto 16) <= sreg(8 downto 1);
-           when "11" => instr_int(31 downto 24) <= sreg(8 downto 1);
+           when "00" => instr_int(31 downto 24) <= sreg(8 downto 1);
+           when "01" => instr_int(23 downto 16) <= sreg(8 downto 1);
+           when "10" => instr_int(15 downto 8) <= sreg(8 downto 1);
+           when "11" => instr_int(7 downto 0) <= sreg(8 downto 1);
            when others => null;
          end case;
       end if;
@@ -139,20 +147,38 @@ begin
 
   instr_shift : process(clk) begin
     if rising_edge(clk) then
-      if (rst = '1') then
- 	 			PM_count <= (others => '0');
-	 			we <= '0';
-      else
-				if(pos = "11" and lp = '1') then
-          we <= '1';
-        elsif(we = '1') then
-	   			we <= '0';
+      if (rst = '1' or run_op = '1') then
+ 	 			PM_count <= (others => '0');	 		
+      else			
+       	if(we = '1') then	   			
           PM_count <= PM_count + 1;
         end if;  
       end if;
     end if;
   end process;
+	we <= '1' when (pos_op = '1' and running = '1') else '0';
 
+
+	running_count : process(clk) begin
+		if rising_edge(clk)	then
+			if (rst = '1') then
+				running <= '0';
+				run_last <= '0';
+			else			
+				run_last <= running;
+				if (instr_int = x"ffff_ffff") then					
+					running <= '0';
+				elsif (instr_int = x"ffff_fffe") then
+					running <= '1';				
+				end if;
+			end if;
+		end if;
+	end process;
+	run_op <= '1' when (running = '0' and run_last = '0') else '0';
+
+
+
+	running_out <= running;
   instr_out <= instr_int;
   we_out <= we;
 	PM_count_out <= PM_count;

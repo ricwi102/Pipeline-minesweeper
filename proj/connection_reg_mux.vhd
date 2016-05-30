@@ -5,14 +5,14 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 
 entity connection_reg_mux is
-   port( clk, rst				: in std_logic;				--System clock and system reset.
-	 IR1_in								: in std_logic_vector(31 downto 0);	--External IR1 input.
-	 IR2_in								: in std_logic_vector(31 downto 0);	--External IR2 input.
-	 IR3_in								: in std_logic_vector(31 downto 0);	--External IR3 input.
-	 IR4_in								: in std_logic_vector(31 downto 0);	--External IR4 input.
+   port( clk, rst				: in std_logic;												--System clock and system reset.
+	 IR1_in								: in std_logic_vector(31 downto 0);		--External IR1 input.
+	 IR2_in								: in std_logic_vector(31 downto 0);		--External IR2 input.
+	 IR3_in								: in std_logic_vector(31 downto 0);		--External IR3 input.
+	 IR4_in								: in std_logic_vector(31 downto 0);		--External IR4 input.
 
-	 B2_mux								: in std_logic_vector(31 downto 0);	--
-	 A2_mux								: in std_logic_vector(31 downto 0);	--	
+	 B2_mux								: in std_logic_vector(31 downto 0);	
+	 A2_mux								: in std_logic_vector(31 downto 0);		
 	 A2, B2								: out std_logic_vector(31 downto 0);	--A2 and B2 registers.
 	 D3										: out std_logic_vector(31 downto 0);
 	 D4_Z4_data						: out std_logic_vector(31 downto 0);	--Either D4 or Z4, the mux chooses.
@@ -22,13 +22,13 @@ entity connection_reg_mux is
 					
 	 PS2KeyboardCLK      	: in std_logic;
    PS2KeyboardData     	: in std_logic;
-	 r10_test	     				: out std_logic_vector(31 downto 0);
+	 r10_test	     				: out std_logic_vector(31 downto 0);  --Keyboardregister used for testing buttons.
 
-	 Hsync	              : out std_logic;                        -- horizontal sync
-	 Vsync	              : out std_logic;                        -- vertical sync
+	 Hsync	              : out std_logic;                      -- horizontal sync
+	 Vsync	              : out std_logic;                      -- vertical sync
 	 vgaRed	              : out	std_logic_vector(2 downto 0);   -- VGA red
-	 vgaGreen             : out std_logic_vector(2 downto 0);     -- VGA green
-	 vgaBlue	        	  : out std_logic_vector(2 downto 1)     -- VGA blue
+	 vgaGreen             : out std_logic_vector(2 downto 0);   -- VGA green
+	 vgaBlue	        	  : out std_logic_vector(2 downto 1)    -- VGA blue
 	 );
 end connection_reg_mux;
 
@@ -36,6 +36,7 @@ end connection_reg_mux;
 
 architecture Behavioral of connection_reg_mux is
 
+--Register ports
 component Regs is
   port (
 				clk, rst 			 								: in std_logic;
@@ -52,6 +53,7 @@ component Regs is
 end component;
 
 
+--ALU_mux ports
 component ALU_mux is
   port (
 				clk,rst    : in std_logic;
@@ -63,6 +65,7 @@ component ALU_mux is
 end component;
 
 
+--register_mux ports
 component register_mux is
   port (D4      : in std_logic_vector (31 downto 0);
         Z4      : in std_logic_vector (31 downto 0);
@@ -73,6 +76,7 @@ component register_mux is
         );
 end component;
 
+--ALU ports
 component ALU is
   port (clk 					: in std_logic;
 		  	input1 				: in std_logic_vector (31 downto 0);
@@ -80,19 +84,21 @@ component ALU is
 		  	op_ctrl 			: in std_logic_vector (5 downto 0);
 				z_flag_out 		: out std_logic;
 				n_flag_out 		: out std_logic;
-		  	output 				: out std_logic_vector (31 downto 0)  	        -- Gives D3 its value.
+		  	output 				: out std_logic_vector (31 downto 0)  -- Gives D3 its value.
 	);
 end component;
 
+--data_minne ports
 component data_minne is
   port (	clk 			: in std_logic;
-       		adr 			: in std_logic_vector(11 downto 0); 	    	--Uses the D3 value for adresing.
+       		adr 			: in std_logic_vector(11 downto 0); 	--Uses the D3 value for adresing.
 					IR3_in		: in std_logic_vector(31 downto 0);
-        	Z3_in 		: in std_logic_vector(31 downto 0);     	--Takes its value from "Z3" (B2 MUX)
+        	Z3_in 		: in std_logic_vector(31 downto 0);   --Takes its value from "Z3" (B2 MUX)
         	data_out 	: out std_logic_vector(31 downto 0)		--Gives Z4 its value.
 	);
 end component;
 
+--keyboard_handler ports
 component keyboard_handler is
   port (clk                 : in std_logic;
     		rst                 : in std_logic;
@@ -103,6 +109,7 @@ component keyboard_handler is
     	);
 end component;
 
+--VGA_LAB ports
 component VGA_LAB is
   port (clk	                	: in std_logic;                         -- system clock
 	 			rst                   : in std_logic;                         -- reset
@@ -119,6 +126,7 @@ component VGA_LAB is
 end component;
 
 
+--Internal signals 
 signal write_data 		: std_logic_vector (31 downto 0) := (others => '0');
 signal we_internal		:	std_logic := '0';
 signal ALU_mux_out		: std_logic_vector (31 downto 0) := (others => '0');
@@ -139,11 +147,14 @@ alias command		: std_logic_vector (5 downto 0) is IR2_in(31 downto 26);
 
 begin
 
+--D3 decides the adress in Data Memory
 DM_adr <= D3_int(11 downto 0);
 
+--
 D4_Z4_data <= write_data;
 D3 <= D3_int;
 
+--Just forwarding the values
 process(clk)
   begin 
     if(rising_edge(clk)) then
@@ -155,28 +166,38 @@ end process;
 
 ---- PORT MAPS ----
 
-
+--Regs connections
 U0 : Regs port map(clk => clk, rst => rst, w_enable => we_internal, 
 		   out1 => A2 , out2 => B2 , write_in => write_data ,
-		   read_address1 => read_adr_int1, read_address2 => read_adr_int2, write_address => adr_internal, make_op_in => MakeOp_internal,
+		   read_address1 => read_adr_int1, read_address2 => read_adr_int2, 
+				write_address => adr_internal, make_op_in => MakeOp_internal,
 		    keyboard_in => KeyPressed_int, x_pos_out => x_pos_int, y_pos_out => y_pos_int); 
 
+--ALU_mux connections
 U1 : ALU_mux port map(clk => clk, rst => rst,
 		      reg => B2_mux, IR1 => IR1_in , IR2 => IR2_in, output => ALU_mux_out);	
 
 
-
+--register_mux connections
 U2 : register_mux port map(D4 => D4_int, Z4 => Z4_int, IR4 => IR4_in,
 			   we => we_internal, data => write_data , adr => adr_internal);
 
-U3 : ALU port map(clk => clk, input1 => ALU_mux_out, input2 => A2_mux, op_ctrl => command, z_flag_out => z_flag, n_flag_out => n_flag , output => D3_int); 
+--ALU connections
+U3 : ALU port map(clk => clk, input1 => ALU_mux_out, input2 => A2_mux, op_ctrl => command,
+								 z_flag_out => z_flag, n_flag_out => n_flag , output => D3_int); 
 
+--data_minne connections
 U4 : data_minne port map(clk => clk, adr => DM_adr , Z3_in => Z3_int, data_out => Z4_int, IR3_in => IR3_in);
 
-U5 : keyboard_handler port map(clk => clk, rst => rst, PS2KeyboardCLK => PS2KeyboardCLK, PS2KeyboardData => PS2KeyboardData, MakeOpOut => MakeOp_internal,
-				KeyPressedOut => KeyPressed_int);
+--keyboard_handler connections
+U5 : keyboard_handler port map(clk => clk, rst => rst, PS2KeyboardCLK => PS2KeyboardCLK, 
+															PS2KeyboardData => PS2KeyboardData, MakeOpOut => MakeOp_internal,	
+															KeyPressedOut => KeyPressed_int);
 
-U6 : VGA_LAB port map(clk => clk, rst => rst, x_pos => x_pos_int, y_pos => y_pos_int, IR3_in => IR3_in, Z3_in => Z3_int, D3_in => D3_int, Hsync => Hsync, Vsync => Vsync, vgaRed => vgaRed, vgaGreen => vgaGreen, vgaBlue => vgaBlue);
+--VGA_LAB connections
+U6 : VGA_LAB port map(clk => clk, rst => rst, x_pos => x_pos_int, y_pos => y_pos_int, IR3_in => IR3_in, 
+											Z3_in => Z3_int, D3_in => D3_int, Hsync => Hsync, Vsync => Vsync, vgaRed => vgaRed, 
+											vgaGreen => vgaGreen, vgaBlue => vgaBlue);
 
 
 end Behavioral;
