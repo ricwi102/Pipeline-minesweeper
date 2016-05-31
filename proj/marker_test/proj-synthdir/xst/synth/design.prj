@@ -1,4 +1,0 @@
-vhdl work "../../../VGA_lab.vhd"
-vhdl work "../../../PICT_MEM.vhd"
-vhdl work "../../../VGA_MOTOR.vhd"
-vhdl work "../../../keyboard_handler.vhd"

@@ -34,7 +34,7 @@ PART=xc6slx16-3-csg324
 
 
 proj.%: S=connection_master.vhd connection_reg_mux.vhd connection_IR_logic.vhd ALU.vhd registers.vhd IR.vhd DM.vhd ALU_mux.vhd register_mux.vhd jump_stall.vhd dataforwarding.vhd keyboard_handler.vhd PM.vhd UART/program_loader.vhd VGA_stuff/VGA_MOTOR.vhd VGA_stuff/PICT_MEM.vhd VGA_stuff/VGA_lab.vhd timer.vhd
-proj.%: T=keyboard_stuff/keyboard_handler_tb.vhd
+#proj.%: T=keyboard_stuff/keyboard_handler_tb.vhd
 proj.%: U=Nexys3.ucf
 
 
